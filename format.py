@@ -64,7 +64,7 @@ def plot_coordinates_on_mapbox(df, save_path, folder_path):
             fig.update_layout(mapbox_style="dark", username=os.environ.get("MAPBOX"))
             fig.write_html(save_path.replace('.csv', '.html'))
         except:
-            print(sys.exc_info(), save_path)
+            print(sys.exc_info()[0], save_path)
     else:
         shutil.rmtree(folder_path)
 
@@ -104,35 +104,35 @@ def iterate_through_files_in_folder(open_path, save_path):
     Function to iterate through all files in a folder and return a list of
     dataframes.
     """
-    for root, subdirectories, files in os.walk(open_path):
-        for folder in subdirectories:
-            # try:
-            #     os.mkdir('home/pi/Desktop/exported_maps')
-            #     shutil.rmtree(os.path.join(save_path, folder))
-            # except:
-            #     pass
-            # try:
-            #     os.mkdir(os.path.join(save_path, folder))
-            # except:
-            #     pass
-            data1 = pd.read_csv(root + '/' + folder + '/' + 'rpi-coordinates.csv')
-            data2 = pd.read_csv(root + '/' + folder + '/' + 'rpi-compass.csv')
-            output1 = pd.merge(data1, data2, on='timestamp', how='inner')
+    # for root, subdirectories, files in os.walk(open_path):
+    #     for folder in subdirectories:
+    #         # try:
+    #         #     os.mkdir('home/pi/Desktop/exported_maps')
+    #         #     shutil.rmtree(os.path.join(save_path, folder))
+    #         # except:
+    #         #     pass
+    #         # try:
+    #         #     os.mkdir(os.path.join(save_path, folder))
+    #         # except:
+    #         #     pass
+    #         data1 = pd.read_csv(root + '/' + folder + '/' + 'rpi-coordinates.csv')
+    #         data2 = pd.read_csv(root + '/' + folder + '/' + 'rpi-compass.csv')
+    #         output1 = pd.merge(data1, data2, on='timestamp', how='inner')
             
-            data3 = pd.read_csv(root + '/' + folder + '/' + 'rpi-imu.csv')
-            data4 = pd.read_csv(root + '/' + folder + '/' + 'rpi-doppler.csv')
-            output2 = pd.merge(data3, data4, on='timestamp', how='inner')
-            output3 = pd.merge(output1, output2, on='timestamp', how='inner')
+    #         data3 = pd.read_csv(root + '/' + folder + '/' + 'rpi-imu.csv')
+    #         data4 = pd.read_csv(root + '/' + folder + '/' + 'rpi-doppler.csv')
+    #         output2 = pd.merge(data3, data4, on='timestamp', how='inner')
+    #         output3 = pd.merge(output1, output2, on='timestamp', how='inner')
             
-            data5 = pd.read_csv(root + '/' + folder + '/' + 'biodigital-imu.csv')
-            data6 = pd.read_csv(root + '/' + folder + '/' + 'biodigital-dmc.csv')
-            output4 = pd.merge(data5, data6, on='timestamp', how='inner')
-            output5 = pd.merge(output3, output4, on='timestamp', how='inner')
+    #         data5 = pd.read_csv(root + '/' + folder + '/' + 'biodigital-imu.csv')
+    #         data6 = pd.read_csv(root + '/' + folder + '/' + 'biodigital-dmc.csv')
+    #         output4 = pd.merge(data5, data6, on='timestamp', how='inner')
+    #         output5 = pd.merge(output3, output4, on='timestamp', how='inner')
 
-            data7 = pd.read_csv(root + '/' + folder + '/' + 'rpi-altitude-temperature.csv')
-            output6 = pd.merge(output5, data7, on='timestamp', how='inner')
+    #         data7 = pd.read_csv(root + '/' + folder + '/' + 'rpi-altitude-temperature.csv')
+    #         output6 = pd.merge(output5, data7, on='timestamp', how='inner')
             
-            output6.to_csv( save_path + '/' + folder + '/' + 'master.csv', index=False, encoding='utf-8-sig')
+    #         output6.to_csv( save_path + '/' + folder + '/' + 'master.csv', index=False, encoding='utf-8-sig')
     for root, subdirectories, files in os.walk(save_path):
         for file in files:
             if file == 'master.csv':
