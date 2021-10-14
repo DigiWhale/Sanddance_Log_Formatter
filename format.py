@@ -7,6 +7,8 @@ import shutil
 import sys
 from dotenv import load_dotenv
 
+load_dotenv()
+
 # def regex_column_names(df):
 #     """
 #     Function to replace all period characters in column names with
