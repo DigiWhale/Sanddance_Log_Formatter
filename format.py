@@ -48,7 +48,7 @@ def plot_coordinates_on_mapbox(df, save_path, folder_path):
     """
     if not df.empty:
         try:
-            fig = px.scatter_mapbox(df, lat='rpi_lat', lon='rpi_lon', zoom=18, color='altitude', opacity='angle_y_x', center={'lat': df['rpi_lat'][0], 'lon': df['rpi_lon'][0]}, hover_data=["timestamp"])
+            fig = px.scatter_mapbox(df, lat='rpi_lat', lon='rpi_lon', zoom=18, color='altitude', opacity='accelerometer_y_x', center={'lat': df['rpi_lat'][0], 'lon': df['rpi_lon'][0]}, hover_data=["timestamp"])
             fig2 = px.scatter_mapbox(df, lat='msrs_lat', lon='msrs_lon', zoom=18, color_discrete_sequence=['blue'], hover_data=["timestamp"])
             fig3 = px.scatter_mapbox(df, lat='gps_lat_x', lon='gps_lon', zoom=18, color_discrete_sequence=['#befd05'], hover_data=["timestamp"])
             fig.add_trace(fig2.data[0])
