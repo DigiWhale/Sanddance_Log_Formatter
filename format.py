@@ -57,13 +57,13 @@ def plot_coordinates_on_mapbox(df, save_path, folder_path):
     if not df.empty:
         print(3)
         try:
-            fig = px.scatter_mapbox(df, lat='rpi_lat', lon='rpi_lon', zoom=18, color_discrete_sequence=['#fd6bbe'], center={'lat': df['rpi_lat'][0], 'lon': df['rpi_lon'][0]}, hover_data=["timestamp"])
+            fig = px.scatter_mapbox(df, lat='rpi_lat', lon='rpi_lon', zoom=18, center={'lat': df['rpi_lat'][0], 'lon': df['rpi_lon'][0]}, hover_data=["timestamp"])
             print(4)
             # fig2 = px.scatter_mapbox(df, lat='msrs_lat', lon='msrs_lon', zoom=18, color_discrete_sequence=['blue'], hover_data=["timestamp"])
             # fig3 = px.scatter_mapbox(df, lat='gps_lat_x', lon='gps_lon', zoom=18, color_discrete_sequence=['#befd05'], hover_data=["timestamp"])
             # fig.add_trace(fig2.data[0])
             # fig.add_trace(fig3.data[0])
-            fig.update_layout(username=os.environ.get("MAPBOX"))
+            fig.update_layout(mapbox_style="dark", username=os.environ.get("MAPBOX"))
             print(5)
             fig.write_html(save_path.replace('.csv', '.html'))
             print(6)
