@@ -1,5 +1,4 @@
 import pandas as pd
-# import regex as re
 import os
 import plotly.express as px
 import math
@@ -9,13 +8,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 px.set_mapbox_access_token(os.environ.get("MAPBOX"))
-# def regex_column_names(df):
-#     """
-#     Function to replace all period characters in column names with
-#     underscores.
-#     """
-#     df.columns = [re.sub(r'\.', '_', col) for col in df.columns]
-#     return df
 
 def fill_in_blank_values_in_df(df):
     """
@@ -55,18 +47,14 @@ def plot_coordinates_on_mapbox(df, save_path, folder_path):
     Function to plot coordinates on a mapbox map.
     """
     if not df.empty:
-        print(3)
         try:
             fig = px.scatter_mapbox(df, lat='rpi_lat', lon='rpi_lon', zoom=18, color_discrete_sequence=['#fd6bbe'], center={'lat': df['rpi_lat'][0], 'lon': df['rpi_lon'][0]}, hover_data=["timestamp"])
-            print(4)
             fig2 = px.scatter_mapbox(df, lat='msrs_lat', lon='msrs_lon', zoom=18, color_discrete_sequence=['blue'], hover_data=["timestamp"])
             fig3 = px.scatter_mapbox(df, lat='gps_lat_x', lon='gps_lon', zoom=18, color_discrete_sequence=['#befd05'], hover_data=["timestamp"])
             fig.add_trace(fig2.data[0])
             fig.add_trace(fig3.data[0])
             fig.update_layout(mapbox_style="dark")
-            print(5)
             fig.write_html(save_path.replace('.csv', '.html'))
-            print(6)
         except:
             print(sys.exc_info()[0], save_path)
     else:
@@ -140,11 +128,8 @@ def iterate_through_files_in_folder(open_path, save_path):
     for root, subdirectories, files in os.walk(save_path):
         for file in files:
             if file == 'master.csv':
-                print(1)
                 df = import_csv_as_df(os.path.join(save_path, root.split('/')[-1]) + '/' + file)
-                print(2)
                 plot_coordinates_on_mapbox(df, os.path.join(save_path, root.split('/')[-1]) + '/' + file, os.path.join(save_path, root.split('/')[-1]))
-                print(7)
 
 
 if __name__ == "__main__":
