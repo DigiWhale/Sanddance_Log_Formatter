@@ -3,6 +3,8 @@ import regex as re
 import os
 import plotly.express as px
 import math
+import shutil
+import sys
 
 def regex_column_names(df):
     """
@@ -45,13 +47,24 @@ def plot_data_in_plotly_bar_chart(df, save_path):
         i.update_layout(title_font_color="red", title_x=0.5, title_font_size=18)
         write_to_file(save_path.replace('.csv', '.html'), i.to_html(full_html=False))
 
-def plot_coordinates_on_mapbox(df, save_path):
+def plot_coordinates_on_mapbox(df, save_path, folder_path):
     """
     Function to plot coordinates on a mapbox map.
     """
-    fig = px.scatter_mapbox(df, lat='derived_location_msrs_lat', lon='derived_location_msrs_lng', size=(df.derived_location_gps_lat/10)+1, size_max=8, color=df.sensors_imu_ins_sensor_timeOfWeek, zoom=18, center={'lat': 38.8319943, 'lon': -77.0496118}, hover_data=['derived_location_gps_lat', 'derived_location_gps_lng', 'velocity'])
-    fig.update_layout(mapbox_style="dark", mapbox_accesstoken='pk.eyJ1IjoiZnJzdHlsc2tpZXIiLCJhIjoiY2tmdDFveTI5MGxraDJxdHMzYXM4OXFiciJ9.96hyKcaRFBFzH6xcsN3CYQ')
-    fig.write_html(save_path.replace('.csv', '.html'))
+    if not df.empty:
+        try:
+            fig = px.scatter_mapbox(df, lat='rpi_lat', lon='rpi_lon', zoom=18, color_discrete_sequence=['#fd6bbe'], center={'lat': df['rpi_lat'][0], 'lon': df['rpi_lon'][0]}, hover_data=["timestamp"])
+            fig2 = px.scatter_mapbox(df, lat='msrs_lat', lon='msrs_lon', zoom=18, color_discrete_sequence=['blue'], hover_data=["timestamp"])
+            fig3 = px.scatter_mapbox(df, lat='gps_lat_x', lon='gps_lon', zoom=18, color_discrete_sequence=['#befd05'], hover_data=["timestamp"])
+            fig.add_trace(fig2.data[0])
+            fig.add_trace(fig3.data[0])
+            fig.update_layout(mapbox_style="dark", mapbox_accesstoken='pk.eyJ1IjoiZnJzdHlsc2tpZXIiLCJhIjoiY2tmdDFveTI5MGxraDJxdHMzYXM4OXFiciJ9.96hyKcaRFBFzH6xcsN3CYQ')
+            fig.write_html(save_path.replace('.csv', '.html'))
+        except:
+            print(sys.exc_info(), save_path)
+    else:
+        shutil.rmtree(folder_path)
+
 
 def import_csv_as_df(csv_file):
     """
@@ -83,23 +96,47 @@ def calculate_distance_between_two_coordinates(lat1, lon1, lat2, lon2):
     return distance
     
 
-def iterate_through_files_in_folder(folder_path):
+def iterate_through_files_in_folder(open_path, save_path):
     """
     Function to iterate through all files in a folder and return a list of
     dataframes.
     """
-    for file in os.listdir(folder_path):
-        if file.endswith(".csv"):
-            df = import_csv_as_df(folder_path + '/' + file)
-            new_df = regex_column_names(df)
-            for column in new_df.columns:
-                if column == 'derived_location_msrs_lng':
-                    plot_coordinates_on_mapbox(new_df, folder_path + '/' + file)
-                elif column == 'sensor_value_usbctr4_distance':
-                    plot_data_in_plotly_bar_chart(new_df, folder_path + '/' + file)
-            save_csv(new_df, folder_path + '/' + file)
+    for root, subdirectories, files in os.walk(open_path):
+        for folder in subdirectories:
+            try:
+                shutil.rmtree(os.path.join(save_path, folder))
+            except:
+                pass
+            try:
+                os.mkdir(os.path.join(save_path, folder))
+            except:
+                pass
+            data1 = pd.read_csv(root + '/' + folder + '/' + 'rpi-coordinates.csv')
+            data2 = pd.read_csv(root + '/' + folder + '/' + 'rpi-compass.csv')
+            output1 = pd.merge(data1, data2, on='timestamp', how='inner')
+            
+            data3 = pd.read_csv(root + '/' + folder + '/' + 'rpi-imu.csv')
+            data4 = pd.read_csv(root + '/' + folder + '/' + 'rpi-doppler.csv')
+            output2 = pd.merge(data3, data4, on='timestamp', how='inner')
+            output3 = pd.merge(output1, output2, on='timestamp', how='inner')
+            
+            data5 = pd.read_csv(root + '/' + folder + '/' + 'biodigital-imu.csv')
+            data6 = pd.read_csv(root + '/' + folder + '/' + 'biodigital-dmc.csv')
+            output4 = pd.merge(data5, data6, on='timestamp', how='inner')
+            output5 = pd.merge(output3, output4, on='timestamp', how='inner')
+
+            data7 = pd.read_csv(root + '/' + folder + '/' + 'rpi-altitude-temperature.csv')
+            output6 = pd.merge(output5, data7, on='timestamp', how='inner')
+            
+            output6.to_csv( save_path + '/' + folder + '/' + 'master.csv', index=False, encoding='utf-8-sig')
+    for root, subdirectories, files in os.walk(save_path):
+        for file in files:
+            if file == 'master.csv':
+                df = import_csv_as_df(os.path.join(save_path, root.split('/')[-1]) + '/' + file)
+                plot_coordinates_on_mapbox(df, os.path.join(save_path, root.split('/')[-1]) + '/' + file, os.path.join(save_path, root.split('/')[-1]))
 
 
 if __name__ == "__main__":
-    path = "/Users/andrewhumphrey/Desktop/MSRS_Logs"
-    iterate_through_files_in_folder(path)
+    open_path = "/Volumes/pi/MSRS-RPI/logs"
+    save_path = "/Users/andrewhumphrey/Desktop/exported_maps"
+    iterate_through_files_in_folder(open_path, save_path)
