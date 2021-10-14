@@ -136,8 +136,11 @@ def iterate_through_files_in_folder(open_path, save_path):
     for root, subdirectories, files in os.walk(save_path):
         for file in files:
             if file == 'master.csv':
+                print(1)
                 df = import_csv_as_df(os.path.join(save_path, root.split('/')[-1]) + '/' + file)
+                print(2)
                 plot_coordinates_on_mapbox(df, os.path.join(save_path, root.split('/')[-1]) + '/' + file, os.path.join(save_path, root.split('/')[-1]))
+                print(3)
 
 
 if __name__ == "__main__":
