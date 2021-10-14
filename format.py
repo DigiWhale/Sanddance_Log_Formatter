@@ -5,6 +5,7 @@ import plotly.express as px
 import math
 import shutil
 import sys
+from dotenv import load_dotenv
 
 def regex_column_names(df):
     """
@@ -58,7 +59,7 @@ def plot_coordinates_on_mapbox(df, save_path, folder_path):
             fig3 = px.scatter_mapbox(df, lat='gps_lat_x', lon='gps_lon', zoom=18, color_discrete_sequence=['#befd05'], hover_data=["timestamp"])
             fig.add_trace(fig2.data[0])
             fig.add_trace(fig3.data[0])
-            fig.update_layout(mapbox_style="dark", mapbox_accesstoken='pk.eyJ1IjoiZnJzdHlsc2tpZXIiLCJhIjoiY2tmdDFveTI5MGxraDJxdHMzYXM4OXFiciJ9.96hyKcaRFBFzH6xcsN3CYQ')
+            fig.update_layout(mapbox_style="dark", username=os.environ.get("MAPBOX"))
             fig.write_html(save_path.replace('.csv', '.html'))
         except:
             print(sys.exc_info(), save_path)
