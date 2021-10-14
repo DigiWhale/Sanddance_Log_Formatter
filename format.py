@@ -1,5 +1,5 @@
 import pandas as pd
-import regex as re
+# import regex as re
 import os
 import plotly.express as px
 import math
@@ -7,13 +7,13 @@ import shutil
 import sys
 from dotenv import load_dotenv
 
-def regex_column_names(df):
-    """
-    Function to replace all period characters in column names with
-    underscores.
-    """
-    df.columns = [re.sub(r'\.', '_', col) for col in df.columns]
-    return df
+# def regex_column_names(df):
+#     """
+#     Function to replace all period characters in column names with
+#     underscores.
+#     """
+#     df.columns = [re.sub(r'\.', '_', col) for col in df.columns]
+#     return df
 
 def fill_in_blank_values_in_df(df):
     """
