@@ -55,8 +55,10 @@ def plot_coordinates_on_mapbox(df, save_path, folder_path):
     Function to plot coordinates on a mapbox map.
     """
     if not df.empty:
+        print(4)
         try:
             fig = px.scatter_mapbox(df, lat='rpi_lat', lon='rpi_lon', zoom=18, color_discrete_sequence=['#fd6bbe'], center={'lat': df['rpi_lat'][0], 'lon': df['rpi_lon'][0]}, hover_data=["timestamp"])
+            print(5)
             # fig2 = px.scatter_mapbox(df, lat='msrs_lat', lon='msrs_lon', zoom=18, color_discrete_sequence=['blue'], hover_data=["timestamp"])
             # fig3 = px.scatter_mapbox(df, lat='gps_lat_x', lon='gps_lon', zoom=18, color_discrete_sequence=['#befd05'], hover_data=["timestamp"])
             # fig.add_trace(fig2.data[0])
@@ -140,7 +142,7 @@ def iterate_through_files_in_folder(open_path, save_path):
                 df = import_csv_as_df(os.path.join(save_path, root.split('/')[-1]) + '/' + file)
                 print(2)
                 plot_coordinates_on_mapbox(df, os.path.join(save_path, root.split('/')[-1]) + '/' + file, os.path.join(save_path, root.split('/')[-1]))
-                print(3)
+                print(6)
 
 
 if __name__ == "__main__":
