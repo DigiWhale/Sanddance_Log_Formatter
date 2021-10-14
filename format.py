@@ -103,14 +103,15 @@ def iterate_through_files_in_folder(open_path, save_path):
     """
     for root, subdirectories, files in os.walk(open_path):
         for folder in subdirectories:
-            try:
-                shutil.rmtree(os.path.join(save_path, folder))
-            except:
-                pass
-            try:
-                os.mkdir(os.path.join(save_path, folder))
-            except:
-                pass
+            # try:
+            #     os.mkdir('home/pi/Desktop/exported_maps')
+            #     shutil.rmtree(os.path.join(save_path, folder))
+            # except:
+            #     pass
+            # try:
+            #     os.mkdir(os.path.join(save_path, folder))
+            # except:
+            #     pass
             data1 = pd.read_csv(root + '/' + folder + '/' + 'rpi-coordinates.csv')
             data2 = pd.read_csv(root + '/' + folder + '/' + 'rpi-compass.csv')
             output1 = pd.merge(data1, data2, on='timestamp', how='inner')
@@ -137,6 +138,6 @@ def iterate_through_files_in_folder(open_path, save_path):
 
 
 if __name__ == "__main__":
-    open_path = "/Volumes/pi/MSRS-RPI/logs"
-    save_path = "/Users/andrewhumphrey/Desktop/exported_maps"
+    open_path = "/home/pi/MSRS-RPI/logs"
+    save_path = "/home/pi/MSRS-RPI/logs"
     iterate_through_files_in_folder(open_path, save_path)
