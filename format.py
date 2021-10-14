@@ -50,7 +50,7 @@ def plot_coordinates_on_mapbox(df, save_path, folder_path):
         try:
             fig = px.scatter_mapbox(df, lat='rpi_lat', lon='rpi_lon', zoom=18, color_discrete_sequence=['#fd6bbe'], center={'lat': df['rpi_lat'][0], 'lon': df['rpi_lon'][0]}, hover_data=["timestamp"])
             fig2 = px.scatter_mapbox(df, lat='msrs_lat', lon='msrs_lon', zoom=18, color_discrete_sequence=['blue'], hover_data=["timestamp"])
-            fig3 = px.scatter_mapbox(df, lat='gps_lat_x', lon='gps_lon', zoom=18, color='altitude', color_continuous_scale=px.colors.sequential.Viridis, hover_data=["timestamp"])
+            fig3 = px.scatter_mapbox(df, lat='gps_lat_x', lon='gps_lon', zoom=18, color='altitude', color_continuous_scale='Bluered_r', hover_data=["timestamp"])
             fig.add_trace(fig2.data[0])
             fig.add_trace(fig3.data[0])
             fig.update_layout(mapbox_style="dark")
