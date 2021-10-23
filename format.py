@@ -128,7 +128,7 @@ def iterate_through_files_in_folder(open_path, save_path):
                     df = import_csv_as_df(os.path.join(save_path, root.split('/')[-1]) + '/' + file)
                     plot_coordinates_on_mapbox(df, os.path.join(save_path, root.split('/')[-1]) + '/' + file, os.path.join(save_path, root.split('/')[-1]))
                 except:
-                    pass
+                    print(sys.exc_info())
 
 
 if __name__ == "__main__":
