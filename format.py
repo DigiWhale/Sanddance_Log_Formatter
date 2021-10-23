@@ -120,7 +120,7 @@ def iterate_through_files_in_folder(open_path, save_path):
                 
                 output7.to_csv( save_path + '/' + folder + '/' + 'master.csv', index=False, encoding='utf-8-sig')
             except:
-                print(sys.exc_info()[0], folder)
+                print(sys.exc_info(), folder)
     for root, subdirectories, files in os.walk(save_path):
         for file in files:
             if file == 'master.csv':
