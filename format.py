@@ -118,7 +118,7 @@ def iterate_through_files_in_folder(open_path, save_path):
                 output6 = pd.merge(data7, data8, on='timestamp', how='inner', suffixes=['_1','_2'])
                 output7 = pd.merge(output5, output6, on='timestamp', how='inner', suffixes=['_1','_2'])
                 
-                output7.to_csv( save_path + '/' + folder + '/' + 'master.csv', index=False, encoding='utf-8-sig')
+                output7.to_csv( save_path + '/' + folder + '/' + 'master.csv')
             except:
                 print(sys.exc_info(), root + '/' + folder + '/')
     for root, subdirectories, files in os.walk(save_path):
