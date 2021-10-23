@@ -114,9 +114,11 @@ def iterate_through_files_in_folder(open_path, save_path):
                 output5 = pd.merge(output3, output4, on='timestamp', how='inner', suffixes=['_1','_2'])
 
                 data7 = pd.read_csv(root + '/' + folder + '/' + 'rpi-altitude-temperature.csv')
-                output6 = pd.merge(output5, data7, on='timestamp', how='inner', suffixes=['_1','_2'])
+                data8 = pd.read_csv(root + '/' + folder + '/' + 'rpi-secondary-compass.csv')
+                output6 = pd.merge(data7, data8, on='timestamp', how='inner', suffixes=['_1','_2'])
+                output7 = pd.merge(output5, output6, on='timestamp', how='inner', suffixes=['_1','_2'])
                 
-                output6.to_csv( save_path + '/' + folder + '/' + 'master.csv', index=False, encoding='utf-8-sig')
+                output7.to_csv( save_path + '/' + folder + '/' + 'master.csv', index=False, encoding='utf-8-sig')
             except:
                 pass
     for root, subdirectories, files in os.walk(save_path):
