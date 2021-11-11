@@ -49,6 +49,8 @@ def calculate_drift(open_path, save_path):
         prev_rpi_lon = coordinates['rpi_lon'].iloc[0]
         prev_gps_lat = coordinates['gps_lat'].iloc[0]
         prev_gps_lon = coordinates['gps_lon'].iloc[0]
+        prev_rpi_bearing = 360
+        prev_gps_bearing = 360
         for index, row in coordinates.iterrows():
           # print(row['rpi_lat'], row['rpi_lon'], row['gps_lat'], row['gps_lon'])
           coords_1 = (row['rpi_lat'], row['rpi_lon'])
@@ -64,10 +66,16 @@ def calculate_drift(open_path, save_path):
           rpi_heading.append(rpi_bearing)
           if gps_bearing < 0:
             gps_bearing = gps_bearing + 360
+          if rpi_bearing == 0:
+            rpi_bearing = prev_rpi_bearing
+          if gps_bearing == 0:
+            gps_bearing = prev_gps_bearing
           gps_heading.append(gps_bearing)
           gps_minus_rpi_bearing_difference.append(gps_bearing - rpi_bearing)
           gps_distance_from_prev_coord.append(gps_dist)
           rpi_distance_from_prev_coord.append(rpi_dist)
+          prev_rpi_bearing = rpi_bearing
+          prev_gps_bearing = gps_bearing
           prev_gps_lon = row['gps_lon']
           prev_gps_lat = row['gps_lat']
           prev_rpi_lon = row['rpi_lon']
