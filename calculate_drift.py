@@ -19,6 +19,19 @@ def import_csv_as_df(csv_file):
   df = pd.read_csv(csv_file)
   return df
 
+def calculate_new_coordinates(prev_lat, prev_lon, heading, distance):
+  R = 6378.1 #Radius of the Earth
+  brng = heading * (math.pi / 180) #Heading is converted to radians.
+  d = distance/1000 #meters to distance in km
+  lat1 = prev_lat * (math.pi / 180) #Current lat point converted to radians
+  lon1 = prev_lon * (math.pi / 180) #Current lon point converted to radians
+  lat2 = math.asin(math.sin(lat1)*math.cos(d/R) + math.cos(lat1)*math.sin(d/R)*math.cos(brng)) # calculate new lat point
+  lon2 = lon1 + math.atan2(math.sin(brng)*math.sin(d/R)*math.cos(lat1), math.cos(d/R)-math.sin(lat1)*math.sin(lat2)) # calculate new lon point
+  lat2 = math.degrees(lat2) # convert to degrees
+  lon2 = math.degrees(lon2) # convert to degrees
+  return {'lat': lat2, 'lon': lon2} # return new coordinates
+      
+
 def plot_coordinates_on_mapbox(df, save_path):
   """
   Function to plot coordinates on a mapbox map.
@@ -27,8 +40,10 @@ def plot_coordinates_on_mapbox(df, save_path):
     fig = px.scatter_mapbox(df, lat='rpi_lat', lon='rpi_lon', zoom=18, color='gps_minus_rpi_bearing', center={'lat': df['rpi_lat'][0], 'lon': df['rpi_lon'][0]}, hover_data=["drift_between_rpi_and_gps_meters"])
     fig2 = px.scatter_mapbox(df, lat='msrs_lat', lon='msrs_lon', zoom=18, color_discrete_sequence=['blue'], hover_data=["drift_between_rpi_and_gps_meters"])
     fig3 = px.scatter_mapbox(df, lat='gps_lat', lon='gps_lon', zoom=18, color_discrete_sequence=['#39ff14'], color_continuous_scale='Bluered_r', hover_data=["drift_between_rpi_and_gps_meters"])
+    fig4 = px.scatter_mapbox(df, lat='experimental_lat', lon='experimental_lon', zoom=18, color_discrete_sequence=['#39ffff'], color_continuous_scale='Bluered_r', hover_data=["drift_between_rpi_and_gps_meters"])
     fig.add_trace(fig2.data[0])
     fig.add_trace(fig3.data[0])
+    fig.add_trace(fig4.data[0])
     fig.update_layout(mapbox_style="dark")
     fig.write_html(save_path)
   except:
@@ -113,7 +128,19 @@ def calculate_drift(open_path, save_path):
         coordinates['gps_distance_from_prev_coord_meters'] = gps_distance_from_prev_coord
         coordinates['rpi_distance_from_prev_coord_meters'] = rpi_distance_from_prev_coord
         average_drift = coordinates["gps_minus_rpi_bearing"].mean()
+        new_lat = coordinates['gps_lat'].iloc[0]
+        new_lon = coordinates['gps_lon'].iloc[0]
         print(average_drift)
+        experimental_lat = []
+        experimental_lon = []
+        for index, row in coordinates.iterrows():
+          new_position = calculate_new_coordinates(new_lat, new_lon, average_drift + row['rpi_bearing'], row['rpi_distance_from_prev_coord_meters'])
+          new_lat = new_position['lat']
+          new_lon = new_position['lon']
+          experimental_lat.append(new_lat)
+          experimental_lon.append(new_lon)
+        coordinates['experimental_lat'] = experimental_lat
+        coordinates['experimental_lon'] = experimental_lon
         plot_coordinates_on_mapbox(coordinates, root + '/' + folder + '/' + 'rpi-coordinates-analyzed.html')
         coordinates.to_csv(root + '/' + folder + '/' + 'rpi-coordinates-analyzed.csv', index=False)
       except:
