@@ -86,6 +86,7 @@ def calculate_drift(open_path, save_path):
         rpi_heading = []
         gps_distance_from_prev_coord = []
         rpi_distance_from_prev_coord = []
+        gps_distance_minus_rpi_distance = []
         prev_rpi_lat = coordinates['rpi_lat'].iloc[0]
         prev_rpi_lon = coordinates['rpi_lon'].iloc[0]
         prev_gps_lat = coordinates['gps_lat'].iloc[0]
@@ -115,6 +116,7 @@ def calculate_drift(open_path, save_path):
           gps_minus_rpi_bearing_difference.append(gps_bearing - rpi_bearing)
           gps_distance_from_prev_coord.append(gps_dist*1000)
           rpi_distance_from_prev_coord.append(rpi_dist*1000)
+          gps_distance_minus_rpi_distance.append(gps_dist*1000 - rpi_dist*1000)
           prev_rpi_bearing = rpi_bearing
           prev_gps_bearing = gps_bearing
           prev_gps_lon = row['gps_lon']
@@ -127,14 +129,17 @@ def calculate_drift(open_path, save_path):
         coordinates['rpi_bearing'] = rpi_heading
         coordinates['gps_distance_from_prev_coord_meters'] = gps_distance_from_prev_coord
         coordinates['rpi_distance_from_prev_coord_meters'] = rpi_distance_from_prev_coord
+        coordinates['gps_distance_minus_rpi_distance_meters'] = gps_distance_minus_rpi_distance
         average_drift = coordinates["gps_minus_rpi_bearing"].mean()
-        doppler_compensation_factor = 1.1
+        average_distance_between_rpi_and_gps = coordinates["gps_distance_minus_rpi_distance_meters"].mean()
+        doppler_compensation_factor = 1.01
         new_lat = coordinates['gps_lat'].iloc[0]
         new_lon = coordinates['gps_lon'].iloc[0]
         print('average drift', average_drift)
         experimental_lat = []
         experimental_lon = []
         average_drift_array = []
+        average_distance_array = []
         doppler_compensation_factor_array = []
         experimental_heading_array = []
         for index, row in coordinates.iterrows():
@@ -145,12 +150,14 @@ def calculate_drift(open_path, save_path):
           experimental_lat.append(new_lat)
           experimental_lon.append(new_lon)
           average_drift_array.append(average_drift)
+          average_distance_array.append(average_distance_between_rpi_and_gps)
           doppler_compensation_factor_array.append(doppler_compensation_factor)
         coordinates['experimental_lat'] = experimental_lat
         coordinates['experimental_lon'] = experimental_lon
         coordinates['experimental_heading'] = experimental_heading_array
         coordinates['average_drift'] = average_drift_array
         coordinates['doppler_compensation_factor'] = doppler_compensation_factor_array
+        coordinates['average_distance_between_rpi_and_gps'] = average_distance_array
         plot_coordinates_on_mapbox(coordinates, root + '/' + folder + '/' + 'rpi-coordinates-analyzed.html')
         coordinates.to_csv(root + '/' + folder + '/' + 'rpi-coordinates-analyzed.csv', index=False)
       except:
