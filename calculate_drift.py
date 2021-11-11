@@ -19,7 +19,7 @@ def calculate_drift(open_path, save_path):
             print(folder)
             try:
                 coordinates = pd.read_csv(root + '/' + folder + '/' + 'rpi-coordinates.csv')
-                print(coordinates)
+                print(coordinates.columns['rpi_lat'])
             except:
                 print(sys.exc_info(), root + '/' + folder + '/')
 
