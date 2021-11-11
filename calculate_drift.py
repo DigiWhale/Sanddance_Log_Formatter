@@ -24,7 +24,7 @@ def calculate_drift(open_path, save_path):
                   # print(row['rpi_lat'], row['rpi_lon'], row['gps_lat'], row['gps_lon'])
                   coords_1 = (row['rpi_lat'], row['rpi_lon'])
                   coords_2 = (row['gps_lat'], row['gps_lon'])
-                  print(geodesic(coords_1, coords_2).km/1000, 'meters')
+                  print(geodesic(coords_1, coords_2).km * 1000, 'meters')
             except:
                 print(sys.exc_info(), root + '/' + folder + '/')
 
