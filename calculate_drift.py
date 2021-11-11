@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import sys
+import geopy.distance
 
 def import_csv_as_df(csv_file):
   """
@@ -20,7 +21,10 @@ def calculate_drift(open_path, save_path):
             try:
                 coordinates = pd.read_csv(root + '/' + folder + '/' + 'rpi-coordinates.csv')
                 for index, row in coordinates.iterrows():
-                  print(row['rpi_lat'], row['rpi_lon'], row['gps_lat'], row['gps_lon'])
+                  # print(row['rpi_lat'], row['rpi_lon'], row['gps_lat'], row['gps_lon'])
+                  coords_1 = (row['rpi_lat'], row['rpi_lon'])
+                  coords_2 = (row['gps_lat'], row['gps_lon'])
+                  print(geopy.distance.vincenty(coords_1, coords_2).km/1000)
             except:
                 print(sys.exc_info(), root + '/' + folder + '/')
 
