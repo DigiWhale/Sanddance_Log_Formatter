@@ -34,8 +34,8 @@ def calculate_drift(open_path, save_path):
       try:
         coordinates = pd.read_csv(root + '/' + folder + '/' + 'rpi-coordinates.csv')
         drift = []
-        gps_bearing = []
-        rpi_bearing = []
+        gps_heading = []
+        rpi_heading = []
         prev_rpi_lat = coordinates['rpi_lat'].iloc[0]
         prev_rpi_lon = coordinates['rpi_lon'].iloc[0]
         prev_gps_lat = coordinates['gps_lat'].iloc[0]
@@ -50,17 +50,17 @@ def calculate_drift(open_path, save_path):
           rpi_bearing = get_turf_bearing(prev_rpi_lat, row['rpi_lat'], prev_rpi_lon, row['rpi_lon'])
           if rpi_bearing < 0:
             rpi_bearing = rpi_bearing + 360
-          rpi_bearing.append(rpi_bearing)
+          rpi_heading.append(rpi_bearing)
           if gps_bearing < 0:
             gps_bearing = gps_bearing + 360
-          gps_bearing.append(gps_bearing)
+          gps_heading.append(gps_bearing)
           prev_gps_lon = row['gps_lon']
           prev_gps_lat = row['gps_lat']
           prev_rpi_lon = row['rpi_lon']
           prev_rpi_lat = row['rpi_lat']
         coordinates['drift_between_rpi_and_gps'] = drift
-        coordinates['gps_bearing'] = gps_bearing
-        coordinates['rpi_bearing'] = rpi_bearing
+        coordinates['gps_bearing'] = gps_heading
+        coordinates['rpi_bearing'] = rpi_heading
         coordinates.to_csv(root + '/' + folder + '/' + 'rpi-coordinates-analyzed.csv', index=False)
       except:
         print(sys.exc_info(), root + '/' + folder + '/')
