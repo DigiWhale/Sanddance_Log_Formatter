@@ -43,7 +43,10 @@ def calculate_drift(open_path, save_path):
                   coords_2 = (row['gps_lat'], row['gps_lon'])
                   # print(geodesic(coords_1, coords_2).km * 1000, 'meters')
                   drift.append(geodesic(coords_1, coords_2).km * 1000)
-                  gps_heading.append(get_turf_bearing(prev_gps_lat, row['gps_lat'], prev_gps_lon, row['gps_lon']))
+                  bearing = get_turf_bearing(prev_gps_lat, row['gps_lat'], prev_gps_lon, row['gps_lon'])
+                  if bearing < 0:
+                    bearing = bearing + 360
+                  gps_heading.append(bearing)
                   prev_gps_lon = row['gps_lon']
                   prev_gps_lat = row['gps_lat']
                 coordinates['drift_between_rpi_and_gps'] = drift
