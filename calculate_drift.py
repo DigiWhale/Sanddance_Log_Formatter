@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import sys
-import geopy.distance
+from geopy.distance import geodesic
 
 def import_csv_as_df(csv_file):
   """
@@ -24,7 +24,7 @@ def calculate_drift(open_path, save_path):
                   # print(row['rpi_lat'], row['rpi_lon'], row['gps_lat'], row['gps_lon'])
                   coords_1 = (row['rpi_lat'], row['rpi_lon'])
                   coords_2 = (row['gps_lat'], row['gps_lon'])
-                  print(geopy.distance.vincenty(coords_1, coords_2).km/1000)
+                  print(geodesic(coords_1, coords_2).km/1000, 'meters')
             except:
                 print(sys.exc_info(), root + '/' + folder + '/')
 
