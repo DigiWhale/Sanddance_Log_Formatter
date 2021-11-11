@@ -69,11 +69,11 @@ def calculate_drift(open_path, save_path):
             rpi_bearing = prev_rpi_bearing
           if gps_bearing == 0:
             gps_bearing = prev_gps_bearing
-          rpi_heading.append(round(rpi_bearing, 2))
-          gps_heading.append(round(gps_bearing, 2))
+          rpi_heading.append(round(rpi_bearing, 4))
+          gps_heading.append(round(gps_bearing, 4))
           gps_minus_rpi_bearing_difference.append(round(gps_bearing - rpi_bearing, 2))
-          gps_distance_from_prev_coord.append(gps_dist)
-          rpi_distance_from_prev_coord.append(rpi_dist)
+          gps_distance_from_prev_coord.append(gps_dist*1000)
+          rpi_distance_from_prev_coord.append(rpi_dist*1000)
           prev_rpi_bearing = rpi_bearing
           prev_gps_bearing = gps_bearing
           prev_gps_lon = row['gps_lon']
@@ -81,11 +81,11 @@ def calculate_drift(open_path, save_path):
           prev_rpi_lon = row['rpi_lon']
           prev_rpi_lat = row['rpi_lat']
         coordinates['gps_minus_rpi_bearing'] = gps_minus_rpi_bearing_difference
-        coordinates['drift_between_rpi_and_gps'] = drift
+        coordinates['drift_between_rpi_and_gps_meters'] = drift
         coordinates['gps_bearing'] = gps_heading
         coordinates['rpi_bearing'] = rpi_heading
-        coordinates['gps_distance_from_prev_coord'] = gps_distance_from_prev_coord
-        coordinates['rpi_distance_from_prev_coord'] = rpi_distance_from_prev_coord
+        coordinates['gps_distance_from_prev_coord_meters'] = gps_distance_from_prev_coord
+        coordinates['rpi_distance_from_prev_coord_meters'] = rpi_distance_from_prev_coord
         coordinates.to_csv(root + '/' + folder + '/' + 'rpi-coordinates-analyzed.csv', index=False)
       except:
         print(sys.exc_info(), root + '/' + folder + '/')
