@@ -63,15 +63,15 @@ def calculate_drift(open_path, save_path):
           rpi_dist = get_turf_distance(prev_rpi_lat, row['rpi_lat'], prev_rpi_lon, row['rpi_lon'])
           if rpi_bearing < 0:
             rpi_bearing = rpi_bearing + 360
-          rpi_heading.append(rpi_bearing)
           if gps_bearing < 0:
             gps_bearing = gps_bearing + 360
           if rpi_bearing == 0:
             rpi_bearing = prev_rpi_bearing
           if gps_bearing == 0:
             gps_bearing = prev_gps_bearing
-          gps_heading.append(gps_bearing)
-          gps_minus_rpi_bearing_difference.append(gps_bearing - rpi_bearing)
+          rpi_heading.append(round(rpi_bearing, 2))
+          gps_heading.append(round(gps_bearing, 2))
+          gps_minus_rpi_bearing_difference.append(round(gps_bearing - rpi_bearing, 2))
           gps_distance_from_prev_coord.append(gps_dist)
           rpi_distance_from_prev_coord.append(rpi_dist)
           prev_rpi_bearing = rpi_bearing
