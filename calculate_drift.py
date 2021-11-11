@@ -6,6 +6,7 @@ from geographiclib.geodesic import Geodesic
 from turfpy import measurement
 from geojson import Point, Feature
 import math
+import plotly.express as px
 
 def import_csv_as_df(csv_file):
   """
@@ -14,16 +15,21 @@ def import_csv_as_df(csv_file):
   df = pd.read_csv(csv_file)
   return df
 
-def get_bearing(lat1, lat2, lon1, lon2):
-  brng = Geodesic.WGS84.Inverse(lat1, lon1, lat2, lon2)['azi2']
-  return brng
-  
-def get_turf_bearing(lat1, lat2, lon1, lon2):
-  start = Feature(geometry=Point((lon1, lat1)))
-  end = Feature(geometry=Point((lon2, lat2)))
-  brng = measurement.bearing(start,end)
-  return brng
-  
+def plot_coordinates_on_mapbox(df, save_path, folder_path):
+  """
+  Function to plot coordinates on a mapbox map.
+  """
+  try:
+    fig = px.scatter_mapbox(df, lat='rpi_lat', lon='rpi_lon', zoom=18, color='altitude', center={'lat': df['rpi_lat'][0], 'lon': df['rpi_lon'][0]}, hover_data=["timestamp"])
+    fig2 = px.scatter_mapbox(df, lat='msrs_lat', lon='msrs_lon', zoom=18, color_discrete_sequence=['blue'], hover_data=["timestamp"])
+    fig3 = px.scatter_mapbox(df, lat='gps_lat_1', lon='gps_lon', zoom=18, color_discrete_sequence=['#39ff14'], color_continuous_scale='Bluered_r', hover_data=["timestamp"])
+    fig.add_trace(fig2.data[0])
+    fig.add_trace(fig3.data[0])
+    fig.update_layout(mapbox_style="dark")
+    fig.write_html(save_path.replace('.csv', '.html'))
+  except:
+    print(sys.exc_info()[0], save_path)
+
 def get_turf_distance(lat1, lat2, lon1, lon2):
   start = Feature(geometry=Point((lon1, lat1)))
   end = Feature(geometry=Point((lon2, lat2)))
@@ -102,6 +108,8 @@ def calculate_drift(open_path, save_path):
         coordinates['rpi_bearing'] = rpi_heading
         coordinates['gps_distance_from_prev_coord_meters'] = gps_distance_from_prev_coord
         coordinates['rpi_distance_from_prev_coord_meters'] = rpi_distance_from_prev_coord
+        average_drift = coordinates["gps_minus_rpi_bearing"].mean()
+        print(average_drift)
         coordinates.to_csv(root + '/' + folder + '/' + 'rpi-coordinates-analyzed.csv', index=False)
       except:
         print(sys.exc_info(), root + '/' + folder + '/')
