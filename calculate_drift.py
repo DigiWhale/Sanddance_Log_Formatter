@@ -37,10 +37,10 @@ def plot_coordinates_on_mapbox(df, save_path):
   Function to plot coordinates on a mapbox map.
   """
   try:
-    fig = px.scatter_mapbox(df, lat='rpi_lat', lon='rpi_lon', zoom=18, color='gps_minus_rpi_bearing', center={'lat': df['rpi_lat'][0], 'lon': df['rpi_lon'][0]}, hover_data=["drift_between_rpi_and_gps_meters"])
-    fig2 = px.scatter_mapbox(df, lat='msrs_lat', lon='msrs_lon', zoom=18, color_discrete_sequence=['blue'], hover_data=["drift_between_rpi_and_gps_meters"])
-    fig3 = px.scatter_mapbox(df, lat='gps_lat', lon='gps_lon', zoom=18, color_discrete_sequence=['#39ff14'], color_continuous_scale='Bluered_r', hover_data=["drift_between_rpi_and_gps_meters"])
-    fig4 = px.scatter_mapbox(df, lat='experimental_lat', lon='experimental_lon', zoom=18, color_discrete_sequence=['#39ffff'], color_continuous_scale='Bluered_r', hover_data=["drift_between_rpi_and_gps_meters"])
+    fig = px.scatter_mapbox(df, lat='rpi_lat', lon='rpi_lon', zoom=18, color='gps_minus_rpi_bearing', center={'lat': df['rpi_lat'][0], 'lon': df['rpi_lon'][0]}, hover_data=["drift_between_rpi_and_gps_meters", "average_drift", "doppler_compensation_factor", "experimental_heading", "rpi_heading"])
+    fig2 = px.scatter_mapbox(df, lat='msrs_lat', lon='msrs_lon', zoom=18, color_discrete_sequence=['blue'], hover_data=["drift_between_rpi_and_gps_meters", "average_drift", "doppler_compensation_factor"])
+    fig3 = px.scatter_mapbox(df, lat='gps_lat', lon='gps_lon', zoom=18, color_discrete_sequence=['#39ff14'], color_continuous_scale='Bluered_r', hover_data=["drift_between_rpi_and_gps_meters", "average_drift", "doppler_compensation_factor"])
+    fig4 = px.scatter_mapbox(df, lat='experimental_lat', lon='experimental_lon', zoom=18, color_discrete_sequence=['#39ffff'], color_continuous_scale='Bluered_r', hover_data=["drift_between_rpi_and_gps_meters", "average_drift", "doppler_compensation_factor"])
     fig.add_trace(fig2.data[0])
     fig.add_trace(fig3.data[0])
     fig.add_trace(fig4.data[0])
@@ -136,16 +136,19 @@ def calculate_drift(open_path, save_path):
         experimental_lon = []
         average_drift_array = []
         doppler_compensation_factor_array = []
+        experimental_heading_array = []
         for index, row in coordinates.iterrows():
           new_position = calculate_new_coordinates(new_lat, new_lon, average_drift + row['rpi_bearing'], row['rpi_distance_from_prev_coord_meters'] * doppler_compensation_factor)
           new_lat = new_position['lat']
           new_lon = new_position['lon']
+          experimental_heading_array.append(row['rpi_bearing'] + average_drift)
           experimental_lat.append(new_lat)
           experimental_lon.append(new_lon)
           average_drift_array.append(average_drift)
           doppler_compensation_factor_array.append(doppler_compensation_factor)
         coordinates['experimental_lat'] = experimental_lat
         coordinates['experimental_lon'] = experimental_lon
+        coordinates['experimental_heading'] = experimental_heading_array
         coordinates['average_drift'] = average_drift_array
         coordinates['doppler_compensation_factor'] = doppler_compensation_factor_array
         plot_coordinates_on_mapbox(coordinates, root + '/' + folder + '/' + 'rpi-coordinates-analyzed.html')
