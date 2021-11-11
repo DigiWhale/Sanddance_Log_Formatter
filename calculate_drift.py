@@ -24,9 +24,9 @@ def plot_coordinates_on_mapbox(df, save_path):
   Function to plot coordinates on a mapbox map.
   """
   try:
-    fig = px.scatter_mapbox(df, lat='rpi_lat', lon='rpi_lon', zoom=18, color='altitude', center={'lat': df['rpi_lat'][0], 'lon': df['rpi_lon'][0]}, hover_data=["timestamp"])
-    fig2 = px.scatter_mapbox(df, lat='msrs_lat', lon='msrs_lon', zoom=18, color_discrete_sequence=['blue'], hover_data=["timestamp"])
-    fig3 = px.scatter_mapbox(df, lat='gps_lat', lon='gps_lon', zoom=18, color_discrete_sequence=['#39ff14'], color_continuous_scale='Bluered_r', hover_data=["timestamp"])
+    fig = px.scatter_mapbox(df, lat='rpi_lat', lon='rpi_lon', zoom=18, color='gps_minus_rpi_bearing', center={'lat': df['rpi_lat'][0], 'lon': df['rpi_lon'][0]}, hover_data=["drift_between_rpi_and_gps_meters"])
+    fig2 = px.scatter_mapbox(df, lat='msrs_lat', lon='msrs_lon', zoom=18, color_discrete_sequence=['blue'], hover_data=["drift_between_rpi_and_gps_meters"])
+    fig3 = px.scatter_mapbox(df, lat='gps_lat', lon='gps_lon', zoom=18, color_discrete_sequence=['#39ff14'], color_continuous_scale='Bluered_r', hover_data=["drift_between_rpi_and_gps_meters"])
     fig.add_trace(fig2.data[0])
     fig.add_trace(fig3.data[0])
     fig.update_layout(mapbox_style="dark")
