@@ -7,6 +7,10 @@ from turfpy import measurement
 from geojson import Point, Feature
 import math
 import plotly.express as px
+from dotenv import load_dotenv
+
+load_dotenv()
+px.set_mapbox_access_token(os.environ.get("MAPBOX"))
 
 def import_csv_as_df(csv_file):
   """
@@ -15,18 +19,18 @@ def import_csv_as_df(csv_file):
   df = pd.read_csv(csv_file)
   return df
 
-def plot_coordinates_on_mapbox(df, save_path, folder_path):
+def plot_coordinates_on_mapbox(df, save_path):
   """
   Function to plot coordinates on a mapbox map.
   """
   try:
     fig = px.scatter_mapbox(df, lat='rpi_lat', lon='rpi_lon', zoom=18, color='altitude', center={'lat': df['rpi_lat'][0], 'lon': df['rpi_lon'][0]}, hover_data=["timestamp"])
     fig2 = px.scatter_mapbox(df, lat='msrs_lat', lon='msrs_lon', zoom=18, color_discrete_sequence=['blue'], hover_data=["timestamp"])
-    fig3 = px.scatter_mapbox(df, lat='gps_lat_1', lon='gps_lon', zoom=18, color_discrete_sequence=['#39ff14'], color_continuous_scale='Bluered_r', hover_data=["timestamp"])
+    fig3 = px.scatter_mapbox(df, lat='gps_lat', lon='gps_lon', zoom=18, color_discrete_sequence=['#39ff14'], color_continuous_scale='Bluered_r', hover_data=["timestamp"])
     fig.add_trace(fig2.data[0])
     fig.add_trace(fig3.data[0])
     fig.update_layout(mapbox_style="dark")
-    fig.write_html(save_path.replace('.csv', '.html'))
+    fig.write_html(save_path)
   except:
     print(sys.exc_info()[0], save_path)
 
@@ -110,6 +114,7 @@ def calculate_drift(open_path, save_path):
         coordinates['rpi_distance_from_prev_coord_meters'] = rpi_distance_from_prev_coord
         average_drift = coordinates["gps_minus_rpi_bearing"].mean()
         print(average_drift)
+        plot_coordinates_on_mapbox(coordinates, root + '/' + folder + '/' + 'rpi-coordinates-analyzed.html')
         coordinates.to_csv(root + '/' + folder + '/' + 'rpi-coordinates-analyzed.csv', index=False)
       except:
         print(sys.exc_info(), root + '/' + folder + '/')
