@@ -12,7 +12,7 @@ def import_csv_as_df(csv_file):
   return df
 
 def get_bearing(lat1, lat2, lon1, lon2):
-    brng = Geodesic.WGS84.Inverse(lat1, lon1, lat2, lon2)['azi1']
+    brng = Geodesic.WGS84.Inverse(lat1, lon1, lat2, lon2)['azi2']
     return brng
 
 def calculate_drift(open_path, save_path):
