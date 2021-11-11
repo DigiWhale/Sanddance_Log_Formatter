@@ -5,6 +5,7 @@ from geopy.distance import geodesic
 from geographiclib.geodesic import Geodesic
 from turfpy import measurement
 from geojson import Point, Feature
+import math
 
 def import_csv_as_df(csv_file):
   """
@@ -28,6 +29,21 @@ def get_turf_distance(lat1, lat2, lon1, lon2):
   end = Feature(geometry=Point((lon2, lat2)))
   dist = measurement.distance(start,end)
   return dist
+
+def calculate_compass_bearing(lat1, lat2, lon1, lon2):
+  pointA = (lat1, lon1)
+  pointB = (lat2, lon2)
+  if (type(pointA) != tuple) or (type(pointB) != tuple):
+      raise TypeError("Only tuples are supported as arguments")
+  lat1 = math.radians(pointA[0])
+  lat2 = math.radians(pointB[0])
+  diffLong = math.radians(pointB[1] - pointA[1])
+  x = math.sin(diffLong) * math.cos(lat2)
+  y = math.cos(lat1) * math.sin(lat2) - (math.sin(lat1) * math.cos(lat2) * math.cos(diffLong))
+  initial_bearing = math.atan2(x, y)
+  initial_bearing = math.degrees(initial_bearing)
+  compass_bearing = (initial_bearing + 360) % 360
+  return compass_bearing
 
 def calculate_drift(open_path, save_path):
   """
@@ -57,17 +73,17 @@ def calculate_drift(open_path, save_path):
           coords_2 = (row['gps_lat'], row['gps_lon'])
           # print(geodesic(coords_1, coords_2).km * 1000, 'meters')
           drift.append(geodesic(coords_1, coords_2).km * 1000)
-          gps_bearing = get_turf_bearing(prev_gps_lat, row['gps_lat'], prev_gps_lon, row['gps_lon'])
-          rpi_bearing = get_turf_bearing(prev_rpi_lat, row['rpi_lat'], prev_rpi_lon, row['rpi_lon'])
+          gps_bearing = calculate_compass_bearing(prev_gps_lat, row['gps_lat'], prev_gps_lon, row['gps_lon'])
+          rpi_bearing = calculate_compass_bearing(prev_rpi_lat, row['rpi_lat'], prev_rpi_lon, row['rpi_lon'])
           gps_dist = get_turf_distance(prev_gps_lat, row['gps_lat'], prev_gps_lon, row['gps_lon'])
           rpi_dist = get_turf_distance(prev_rpi_lat, row['rpi_lat'], prev_rpi_lon, row['rpi_lon'])
           if rpi_bearing < 0:
             rpi_bearing = rpi_bearing + 360
           if gps_bearing < 0:
             gps_bearing = gps_bearing + 360
-          if rpi_bearing == 0 or rpi_bearing == 90 or rpi_bearing == 180 or rpi_bearing == 270:
+          if rpi_bearing == 0:
             rpi_bearing = prev_rpi_bearing
-          if gps_bearing == 0 or gps_bearing == 90 or gps_bearing == 180 or gps_bearing == 270:
+          if gps_bearing == 0:
             gps_bearing = prev_gps_bearing
           rpi_heading.append(rpi_bearing)
           gps_heading.append(gps_bearing)
