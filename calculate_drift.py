@@ -46,8 +46,8 @@ def plot_coordinates_on_mapbox(df, save_path):
     fig.add_trace(fig4.data[0])
     fig.update_layout(mapbox_style="dark")
     fig.write_html(save_path)
-  except:
-    print(sys.exc_info()[0], save_path)
+  except Exception as e:
+    print(sys.exc_info()[0], save_path, e)
 
 def get_turf_distance(lat1, lat2, lon1, lon2):
   start = Feature(geometry=Point((lon1, lat1)))
