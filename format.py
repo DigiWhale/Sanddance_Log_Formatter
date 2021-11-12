@@ -105,7 +105,6 @@ def iterate_through_files_in_folder(open_path, save_path):
                     try:
                         print('Deleting folder: ' + folder)
                         shutil.rmtree(root + '/' + folder)
-                        pass
                     except OSError as e:
                         print("Error: %s : %s" % (root + '/' + folder, e.strerror))
                 data2 = pd.read_csv(root + '/' + folder + '/' + 'rpi-compass.csv')
@@ -128,7 +127,7 @@ def iterate_through_files_in_folder(open_path, save_path):
                 
                 output7.to_csv( save_path + '/' + folder + '/' + 'master-' + folder + '.csv', index=False, encoding='utf-8-sig')
             except:
-                print(sys.exc_info(), root + '/' + folder + '/')
+                print("Skipping folder", folder)
     for root, subdirectories, files in os.walk(save_path):
         for file in files:
             if file == 'master-' + root.split('/')[-1] + '.csv':
