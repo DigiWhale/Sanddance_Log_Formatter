@@ -87,6 +87,7 @@ def calculate_drift(open_path, save_path):
           max_end_row_range = len(coordinates)
           
           compass_vehicle_alignment_error = -3
+          doppler_compensation_factor = 1.02
           
           drift = []
           gps_minus_rpi_bearing_difference = []
@@ -148,7 +149,6 @@ def calculate_drift(open_path, save_path):
           coordinates['gps_distance_minus_rpi_distance_meters'] = gps_distance_minus_rpi_distance
           
           average_distance_between_rpi_and_gps = coordinates["gps_distance_minus_rpi_distance_meters"].mean()
-          doppler_compensation_factor = 1.01
           
           new_lat = coordinates['gps_lat'].iloc[0]
           new_lon = coordinates['gps_lon'].iloc[0]
@@ -172,7 +172,7 @@ def calculate_drift(open_path, save_path):
             new_lat = new_position['lat']
             new_lon = new_position['lon']
             
-            experimental_heading_array.append(row['rpi_bearing'] + average_drift + cpmpass_vehicle_alignment_error)
+            experimental_heading_array.append(row['rpi_bearing'] + average_drift + compass_vehicle_alignment_error)
             experimental_lat.append(new_lat)
             experimental_lon.append(new_lon)
             average_drift_array.append(average_drift)
