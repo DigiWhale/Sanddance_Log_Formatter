@@ -83,7 +83,7 @@ def calculate_drift(open_path, save_path):
           coordinates = pd.read_csv(root + '/' + folder + '/' + 'rpi-coordinates.csv')
           
           start_row_range = 0
-          end_row_range = 1000
+          end_row_range = 100
           max_end_row_range = len(coordinates)
           
           drift = []
@@ -156,11 +156,11 @@ def calculate_drift(open_path, save_path):
           
           for index, row in coordinates.iterrows():
             
-            if index % 1000 == 0:
-              if max_end_row_range > start_row_range + 1000:
-                start_row_range += 1000
-              if max_end_row_range > end_row_range + 1000:
-                end_row_range += 1000
+            if index % 100 == 0:
+              if max_end_row_range > start_row_range + 100:
+                start_row_range += 100
+              if max_end_row_range > end_row_range + 100:
+                end_row_range += 100
               else:
                 end_row_range = max_end_row_range
               average_drift = coordinates["gps_minus_rpi_bearing"].iloc[start_row_range:end_row_range].mean()
