@@ -107,6 +107,7 @@ def iterate_through_files_in_folder(open_path, save_path):
                     try:
                         print('Deleting folder: ' + folder)
                         shutil.rmtree(root + '/' + folder)
+                        break
                     except OSError as e:
                         print("Error: %s : %s" % (root + '/' + folder, e.strerror))
                 data2 = pd.read_csv(root + '/' + folder + '/' + 'rpi-compass.csv')
