@@ -126,7 +126,7 @@ def iterate_through_files_in_folder(open_path, save_path):
                 print(sys.exc_info(), root + '/' + folder + '/')
     for root, subdirectories, files in os.walk(save_path):
         for file in files:
-            if file == 'master' + foldername + '.csv':
+            if file == 'master-' + foldername + '.csv':
                 print(file)
                 try:
                     df = import_csv_as_df(os.path.join(save_path, root.split('/')[-1]) + '/' + file)
