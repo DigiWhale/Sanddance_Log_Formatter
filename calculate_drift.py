@@ -155,6 +155,7 @@ def calculate_drift(open_path, save_path):
           new_lon = coordinates['gps_lon'].iloc[0]
           
           overall_drift = coordinates["gps_minus_rpi_bearing"].mean()
+          compass_vehicle_alignment_error = overall_drift
           average_drift = coordinates["gps_minus_rpi_bearing"].iloc[start_row_range:end_row_range].mean()
           print('average drift', average_drift)
           
