@@ -78,7 +78,7 @@ def calculate_drift(open_path, save_path):
   for root, subdirectories, files in os.walk(open_path):
     for folder in subdirectories:
       print(folder)
-      if folder == "11-10-2021-19-05-42":
+      if True: #folder == "11-10-2021-19-05-42":
         try:
           coordinates = pd.read_csv(root + '/' + folder + '/' + 'rpi-coordinates.csv')
           
