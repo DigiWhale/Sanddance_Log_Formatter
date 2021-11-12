@@ -96,11 +96,9 @@ def iterate_through_files_in_folder(open_path, save_path):
     Function to iterate through all files in a folder and return a list of
     dataframes.
     """
-    foldername = ''
     for root, subdirectories, files in os.walk(open_path):
         for folder in subdirectories:
             print(folder)
-            foldername = folder
             try:
                 data1 = pd.read_csv(root + '/' + folder + '/' + 'rpi-coordinates.csv')
                 if len(data1.index) < 100:
@@ -133,7 +131,7 @@ def iterate_through_files_in_folder(open_path, save_path):
                 print(sys.exc_info(), root + '/' + folder + '/')
     for root, subdirectories, files in os.walk(save_path):
         for file in files:
-            if file == 'master-' + foldername + '.csv':
+            if file == 'master-' + root.split('/')[-1] + '.csv':
                 print(file)
                 try:
                     df = import_csv_as_df(os.path.join(save_path, root.split('/')[-1]) + '/' + file)
