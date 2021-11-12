@@ -132,7 +132,7 @@ def iterate_through_files_in_folder(open_path, save_path):
     for root, subdirectories, files in os.walk(save_path):
         for file in files:
             if file == 'master-' + root.split('/')[-1] + '.csv':
-                print(file)
+                print("Generating map for", file)
                 try:
                     df = import_csv_as_df(os.path.join(save_path, root.split('/')[-1]) + '/' + file)
                     plot_coordinates_on_mapbox(df, os.path.join(save_path, root.split('/')[-1]) + '/' + file, os.path.join(save_path, root.split('/')[-1]))
