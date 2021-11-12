@@ -105,7 +105,8 @@ def iterate_through_files_in_folder(open_path, save_path):
                 data1 = pd.read_csv(root + '/' + folder + '/' + 'rpi-coordinates.csv')
                 if len(data1.index) < 100:
                     try:
-                        os.rmdir(root + '/' + folder)
+                        print('Deleting folder: ' + folder)
+                        shutil.rmtree(root + '/' + folder)
                     except OSError as e:
                         print("Error: %s : %s" % (root + '/' + folder, e.strerror))
                 data2 = pd.read_csv(root + '/' + folder + '/' + 'rpi-compass.csv')
