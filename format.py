@@ -103,6 +103,11 @@ def iterate_through_files_in_folder(open_path, save_path):
             foldername = folder
             try:
                 data1 = pd.read_csv(root + '/' + folder + '/' + 'rpi-coordinates.csv')
+                if len(data1.index) < 100:
+                    try:
+                        os.rmdir(root + '/' + folder)
+                    except OSError as e:
+                        print("Error: %s : %s" % (root + '/' + folder, e.strerror))
                 data2 = pd.read_csv(root + '/' + folder + '/' + 'rpi-compass.csv')
                 output1 = pd.merge(data1, data2, on='timestamp', how='inner', suffixes=['_1','_2'])
                 
