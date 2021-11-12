@@ -158,8 +158,8 @@ def calculate_drift(open_path, save_path):
         coordinates['average_drift'] = average_drift_array
         coordinates['doppler_compensation_factor'] = doppler_compensation_factor_array
         coordinates['average_distance_between_rpi_and_gps'] = average_distance_array
-        plot_coordinates_on_mapbox(coordinates, root + '/' + folder + '/' + 'rpi-coordinates-analyzed.html')
-        coordinates.to_csv(root + '/' + folder + '/' + 'rpi-coordinates-analyzed.csv', index=False)
+        plot_coordinates_on_mapbox(coordinates, root + '/' + folder + '/' + 'rpi-map-' + folder + '.html')
+        coordinates.to_csv(root + '/' + folder + '/' + 'rpi-coordinates-analyzed-' + folder + '.csv', index=False)
       except:
         print(sys.exc_info(), root + '/' + folder + '/')
 
