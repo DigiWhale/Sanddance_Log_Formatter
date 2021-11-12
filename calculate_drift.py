@@ -87,7 +87,7 @@ def calculate_drift(open_path, save_path):
           max_end_row_range = len(coordinates)
           
           compass_vehicle_alignment_error = -2.6
-          doppler_compensation_factor = 1.018
+          doppler_compensation_factor = 1.019
           
           drift = []
           gps_minus_rpi_bearing_difference = []
