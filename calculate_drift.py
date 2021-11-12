@@ -81,6 +81,11 @@ def calculate_drift(open_path, save_path):
       if folder == "11-10-2021-16-17-08":
         try:
           coordinates = pd.read_csv(root + '/' + folder + '/' + 'rpi-coordinates.csv')
+          
+          start_row_range = 0
+          end_row_range = 1000
+          max_end_row_range = len(coordinates)
+          
           drift = []
           gps_minus_rpi_bearing_difference = []
           gps_heading = []
@@ -88,22 +93,26 @@ def calculate_drift(open_path, save_path):
           gps_distance_from_prev_coord = []
           rpi_distance_from_prev_coord = []
           gps_distance_minus_rpi_distance = []
+          experimental_lat = []
+          experimental_lon = []
+          average_drift_array = []
+          average_distance_array = []
+          doppler_compensation_factor_array = []
+          experimental_heading_array = []
+          
           prev_rpi_lat = coordinates['rpi_lat'].iloc[0]
           prev_rpi_lon = coordinates['rpi_lon'].iloc[0]
           prev_gps_lat = coordinates['gps_lat'].iloc[0]
           prev_gps_lon = coordinates['gps_lon'].iloc[0]
           prev_rpi_bearing = 0
           prev_gps_bearing = 0
+          
           for index, row in coordinates.iterrows():
-            # print(row['rpi_lat'], row['rpi_lon'], row['gps_lat'], row['gps_lon'])
-            coords_1 = (row['rpi_lat'], row['rpi_lon'])
-            coords_2 = (row['gps_lat'], row['gps_lon'])
-            # print(geodesic(coords_1, coords_2).km * 1000, 'meters')
-            drift.append(geodesic(coords_1, coords_2).km * 1000)
             gps_bearing = calculate_compass_bearing(prev_gps_lat, row['gps_lat'], prev_gps_lon, row['gps_lon'])
             rpi_bearing = calculate_compass_bearing(prev_rpi_lat, row['rpi_lat'], prev_rpi_lon, row['rpi_lon'])
             gps_dist = get_turf_distance(prev_gps_lat, row['gps_lat'], prev_gps_lon, row['gps_lon'])
             rpi_dist = get_turf_distance(prev_rpi_lat, row['rpi_lat'], prev_rpi_lon, row['rpi_lon'])
+            drift_distance = geodesic((row['rpi_lat'], row['rpi_lon']), (row['gps_lat'], row['gps_lon'])).km * 1000
             if rpi_bearing < 0:
               rpi_bearing = rpi_bearing + 360
             if gps_bearing < 0:
@@ -112,18 +121,22 @@ def calculate_drift(open_path, save_path):
               rpi_bearing = prev_rpi_bearing
             if gps_bearing == 0:
               gps_bearing = prev_gps_bearing
+              
+            drift.append(drift_distance)
             rpi_heading.append(rpi_bearing)
             gps_heading.append(gps_bearing)
             gps_minus_rpi_bearing_difference.append(gps_bearing - rpi_bearing)
             gps_distance_from_prev_coord.append(gps_dist*1000)
             rpi_distance_from_prev_coord.append(rpi_dist*1000)
             gps_distance_minus_rpi_distance.append(gps_dist*1000 - rpi_dist*1000)
+            
             prev_rpi_bearing = rpi_bearing
             prev_gps_bearing = gps_bearing
             prev_gps_lon = row['gps_lon']
             prev_gps_lat = row['gps_lat']
             prev_rpi_lon = row['rpi_lon']
             prev_rpi_lat = row['rpi_lat']
+            
           coordinates['gps_minus_rpi_bearing'] = gps_minus_rpi_bearing_difference
           coordinates['drift_between_rpi_and_gps_meters'] = drift
           coordinates['gps_bearing'] = gps_heading
@@ -131,35 +144,45 @@ def calculate_drift(open_path, save_path):
           coordinates['gps_distance_from_prev_coord_meters'] = gps_distance_from_prev_coord
           coordinates['rpi_distance_from_prev_coord_meters'] = rpi_distance_from_prev_coord
           coordinates['gps_distance_minus_rpi_distance_meters'] = gps_distance_minus_rpi_distance
-          average_drift = coordinates["gps_minus_rpi_bearing"].mean()
+          
           average_distance_between_rpi_and_gps = coordinates["gps_distance_minus_rpi_distance_meters"].mean()
           doppler_compensation_factor = 1.01
+          
           new_lat = coordinates['gps_lat'].iloc[0]
           new_lon = coordinates['gps_lon'].iloc[0]
+          
+          average_drift = coordinates["gps_minus_rpi_bearing"].iloc[start_row_range:end_row_range].mean()
           print('average drift', average_drift)
-          experimental_lat = []
-          experimental_lon = []
-          average_drift_array = []
-          average_distance_array = []
-          doppler_compensation_factor_array = []
-          experimental_heading_array = []
+          
           for index, row in coordinates.iterrows():
-            print(index)
+            
+            if index % 1000 == 0:
+              if max_end_row_range > start_row_range + 1000:
+                start_row_range += 1000
+              if max_end_row_range > end_row_range + 1000:
+                end_row_range += 1000
+              else:
+                end_row_range = max_end_row_range
+              average_drift = coordinates["gps_minus_rpi_bearing"].iloc[start_row_range:end_row_range].mean()
+              
             new_position = calculate_new_coordinates(new_lat, new_lon, average_drift + row['rpi_bearing'], row['rpi_distance_from_prev_coord_meters'] * doppler_compensation_factor)
             new_lat = new_position['lat']
             new_lon = new_position['lon']
+            
             experimental_heading_array.append(row['rpi_bearing'] + average_drift)
             experimental_lat.append(new_lat)
             experimental_lon.append(new_lon)
             average_drift_array.append(average_drift)
             average_distance_array.append(average_distance_between_rpi_and_gps)
             doppler_compensation_factor_array.append(doppler_compensation_factor)
+            
           coordinates['experimental_lat'] = experimental_lat
           coordinates['experimental_lon'] = experimental_lon
           coordinates['experimental_heading'] = experimental_heading_array
           coordinates['average_drift'] = average_drift_array
           coordinates['doppler_compensation_factor'] = doppler_compensation_factor_array
           coordinates['average_distance_between_rpi_and_gps'] = average_distance_array
+          
           plot_coordinates_on_mapbox(coordinates, root + '/' + folder + '/' + 'rpi-map-' + folder + '.html')
           coordinates.to_csv(root + '/' + folder + '/' + 'rpi-coordinates-analyzed-' + folder + '.csv', index=False)
         except:
