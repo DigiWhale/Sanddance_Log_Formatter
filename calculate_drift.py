@@ -81,9 +81,9 @@ def calculate_drift(open_path, save_path):
       if True: #folder == "11-10-2021-19-05-42":
         try:
           coordinates = pd.read_csv(root + '/' + folder + '/' + 'rpi-coordinates.csv')
-          
+          increment_value = 10
           start_row_range = 0
-          end_row_range = 100
+          end_row_range = increment_value
           max_end_row_range = len(coordinates)
           
           # compass_vehicle_alignment_error = 0
@@ -154,16 +154,17 @@ def calculate_drift(open_path, save_path):
           new_lat = coordinates['gps_lat'].iloc[0]
           new_lon = coordinates['gps_lon'].iloc[0]
           
+          overall_drift = coordinates["gps_minus_rpi_bearing"].mean()
           average_drift = coordinates["gps_minus_rpi_bearing"].iloc[start_row_range:end_row_range].mean()
           print('average drift', average_drift)
           
           for index, row in coordinates.iterrows():
             
-            if index % 100 == 0:
-              if max_end_row_range > start_row_range + 100:
-                start_row_range += 100
-              if max_end_row_range > end_row_range + 100:
-                end_row_range += 100
+            if index % increment_value == 0:
+              if max_end_row_range > start_row_range + increment_value:
+                start_row_range += increment_value
+              if max_end_row_range > end_row_range + increment_value:
+                end_row_range += increment_value
               else:
                 end_row_range = max_end_row_range
               average_drift = coordinates["gps_minus_rpi_bearing"].iloc[start_row_range:end_row_range].mean()
