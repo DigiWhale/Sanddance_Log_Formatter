@@ -23,9 +23,13 @@ def plot_data_in_plotly_bar_chart(df, save_path):
   """
   Function to plot data in a plotly bar chart.
   """
-  chart = px.area(df, x=df.columns['timestamp'], y=df.columns['rpi_bearing'], title=df.columns['rpi_bearing'], height=400)
-  chart.update_layout(title_font_color="red", title_x=0.5, title_font_size=18)
-  chart.write_html(save_path)
+  print('plotting charts')
+  try:
+    chart = px.area(df, x=df.columns['timestamp'], y=df.columns['rpi_bearing'], title=df.columns['rpi_bearing'], height=400)
+    chart.update_layout(title_font_color="red", title_x=0.5, title_font_size=18)
+    chart.write_html(save_path)
+  except Exception as e:
+    print(sys.exc_info()[0], save_path, e)
   
 def calculate_new_coordinates(prev_lat, prev_lon, heading, distance):
   R = 6378.1 #Radius of the Earth
