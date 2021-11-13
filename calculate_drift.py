@@ -250,7 +250,7 @@ def calculate_drift(open_path, save_path):
           for index, row in coordinates.iterrows():
             experimental_drift = get_turf_distance(row['experimental_lat'], row['gps_lat'], row['experimental_lon'], row['gps_lon']) * 1000
             drift_from_experimental_coords_to_gps_coords.append(experimental_drift)
-            compass_doppler_coordinates = calculate_new_coordinates(new_lat, new_lon, row['rpi_heading'], row['rpi_doppler_distance'])
+            compass_doppler_coordinates = calculate_new_coordinates(new_lat, new_lon, row['rpi_heading'], row['rpi_doppler_distance'] * doppler_compensation_factor)
             new_lat = compass_doppler_coordinates['lat']
             new_lon = compass_doppler_coordinates['lon']
             rpi_doppler_compass_lon_array.append(new_lon)
