@@ -29,12 +29,18 @@ def plot_data_in_plotly_bar_chart(df, save_path):
     chart1 = px.line(df, x=df.index, y='gps_bearing', title='rpi_bearing', height=800)
     chart2 = px.line(df, x=df.index, y='drift_between_rpi_and_gps_meters', title='rpi_bearing', height=800)
     chart3 = px.line(df, x=df.index, y='gps_minus_rpi_bearing', title='rpi_bearing', height=800)
+    chart4 = px.line(df, x=df.index, y='experimental_heading', title='rpi_bearing', height=800)
+    chart5 = px.line(df, x=df.index, y='drift_from_experimental_coords_to_gps_coords', title='rpi_bearing', height=800)
     chart1['data'][0]['line']['color']='rgb(255, 0, 0)'
     chart2['data'][0]['line']['color']='rgb(0, 255, 0)'
     chart3['data'][0]['line']['color']='rgb(0, 0, 255)'
+    chart4['data'][0]['line']['color']='rgb(0, 255, 255)'
+    chart5['data'][0]['line']['color']='rgb(255, 0, 255)'
     chart.add_trace(chart1.data[0])
     chart.add_trace(chart2.data[0])
     chart.add_trace(chart3.data[0])
+    chart.add_trace(chart4.data[0])
+    chart.add_trace(chart5.data[0])
     chart.update_layout(title_font_color="red", title_x=0.5, title_font_size=18)
     chart.write_html(save_path)
   except Exception as e:
@@ -121,6 +127,7 @@ def calculate_drift(open_path, save_path):
           experimental_lat = []
           experimental_lon = []
           average_drift_array = []
+          drift_from_experimental_coords_to_gps_coords = []
           average_distance_array = []
           doppler_compensation_factor_array = []
           experimental_heading_array = []
@@ -217,6 +224,12 @@ def calculate_drift(open_path, save_path):
           coordinates['average_drift'] = average_drift_array
           coordinates['doppler_compensation_factor'] = doppler_compensation_factor_array
           coordinates['average_distance_between_rpi_and_gps'] = average_distance_array
+          
+          for index, row in coordinates.iterrows():
+            experimental_drift = get_turf_distance(row['experimental_lat'], row['gps_lat'], row['experimental_lon'], row['gps_lon']) * 1000
+            drift_from_experimental_coords_to_gps_coords.append(experimental_drift)
+            
+          coordinates['drift_from_experimental_coords_to_gps_coords'] = drift_from_experimental_coords_to_gps_coords
           
           plot_coordinates_on_mapbox(coordinates, root + '/' + folder + '/' + 'rpi-map-' + folder + '.html')
           plot_data_in_plotly_bar_chart(coordinates, root + '/' + folder + '/' + 'rpi-linechart-' + folder + '.html')
