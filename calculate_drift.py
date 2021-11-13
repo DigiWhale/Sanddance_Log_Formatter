@@ -19,6 +19,14 @@ def import_csv_as_df(csv_file):
   df = pd.read_csv(csv_file)
   return df
 
+def plot_data_in_plotly_bar_chart(df, save_path):
+  """
+  Function to plot data in a plotly bar chart.
+  """
+  chart = px.area(df, x='timestamp', y=df.columns['rpi_bearing'], title=df.columns['rpi_bearing'], height=400)
+  chart.update_layout(title_font_color="red", title_x=0.5, title_font_size=18)
+  chart.write_html(save_path)
+  
 def calculate_new_coordinates(prev_lat, prev_lon, heading, distance):
   R = 6378.1 #Radius of the Earth
   brng = heading * (math.pi / 180) #Heading is converted to radians.
@@ -194,6 +202,7 @@ def calculate_drift(open_path, save_path):
           coordinates['average_distance_between_rpi_and_gps'] = average_distance_array
           
           plot_coordinates_on_mapbox(coordinates, root + '/' + folder + '/' + 'rpi-map-' + folder + '.html')
+          plot_data_in_plotly_bar_chart(coordinates, root + '/' + folder + '/' + 'rpi-bar-' + folder + '.html')
           coordinates.to_csv(root + '/' + folder + '/' + 'rpi-coordinates-analyzed-' + folder + '.csv', index=False)
         except:
           print(sys.exc_info(), root + '/' + folder + '/')
