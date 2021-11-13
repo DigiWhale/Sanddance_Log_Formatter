@@ -26,7 +26,7 @@ def plot_data_in_plotly_bar_chart(df, save_path):
   print('plotting charts')
   try:
     chart = px.line(df, x=df.index, y='rpi_bearing', title='rpi_bearing', height=400)
-    chart1 = px.line(df, x=df.index, y='gps_bearing', title='rpi_bearing', height=400, color='rgb(67,67,67)')
+    chart1 = px.line(df, x=df.index, y='gps_bearing', title='rpi_bearing', height=400, line_color='rgba(255,255,255,0)')
     chart.add_trace(chart1.data[0])
     chart.update_layout(title_font_color="red", title_x=0.5, title_font_size=18)
     chart.write_html(save_path)
