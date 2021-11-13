@@ -142,7 +142,7 @@ def calculate_drift(open_path, save_path):
               rpi_bearing = rpi_bearing + 360
             if gps_bearing < 0:
               gps_bearing = gps_bearing + 360
-            if gps_bearing == 180:
+            if gps_bearing == 180 or gps_bearing == 270:
               gps_bearing = prev_gps_bearing
             if rpi_bearing == 0:
               rpi_bearing = prev_rpi_bearing
