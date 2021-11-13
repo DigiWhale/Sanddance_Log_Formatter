@@ -25,7 +25,7 @@ def plot_data_in_plotly_bar_chart(df, save_path):
   """
   print('plotting charts')
   try:
-    chart = px.area(df, x='timestamp', y=df.columns['rpi_bearing'], title=df.columns['rpi_bearing'], height=400)
+    chart = px.area(df, x=int(round(df.columns['timestamp'])), y=df.columns['rpi_bearing'], title=df.columns['rpi_bearing'], height=400)
     chart.update_layout(title_font_color="red", title_x=0.5, title_font_size=18)
     chart.write_html(save_path)
   except Exception as e:
