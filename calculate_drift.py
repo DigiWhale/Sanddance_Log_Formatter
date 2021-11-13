@@ -31,6 +31,7 @@ def plot_data_in_plotly_bar_chart(df, save_path):
     chart3 = px.line(df, x=df.index, y='gps_minus_rpi_bearing', title='rpi_bearing', height=800)
     chart4 = px.line(df, x=df.index, y='experimental_heading', title='rpi_bearing', height=800)
     chart5 = px.line(df, x=df.index, y='drift_from_experimental_coords_to_gps_coords', title='rpi_bearing', height=800)
+    chart5 = px.line(df, x=df.index, y='rpi_heading', title='rpi_bearing', height=800)
     chart1['data'][0]['line']['color']='rgb(255, 0, 0)'
     chart2['data'][0]['line']['color']='rgb(0, 255, 0)'
     chart3['data'][0]['line']['color']='rgb(0, 0, 255)'
@@ -68,9 +69,11 @@ def plot_coordinates_on_mapbox(df, save_path):
     fig2 = px.scatter_mapbox(df, lat='msrs_lat', lon='msrs_lon', zoom=18, color_discrete_sequence=['blue'], hover_data=["drift_between_rpi_and_gps_meters", "average_drift", "doppler_compensation_factor", "experimental_heading", "rpi_bearing"])
     fig3 = px.scatter_mapbox(df, lat='gps_lat', lon='gps_lon', zoom=18, color_discrete_sequence=['#39ff14'], color_continuous_scale='Bluered_r', hover_data=["drift_between_rpi_and_gps_meters", "average_drift", "doppler_compensation_factor", "experimental_heading", "rpi_bearing"])
     fig4 = px.scatter_mapbox(df, lat='experimental_lat', lon='experimental_lon', zoom=18, color_discrete_sequence=['#39ffff'], color_continuous_scale='Bluered_r', hover_data=["drift_between_rpi_and_gps_meters", "average_drift", "doppler_compensation_factor", "experimental_heading", "rpi_bearing"])
+    fig5 = px.scatter_mapbox(df, lat='rpi_doppler_compass_lat', lon='rpi_doppler_compass_lon', zoom=18, color_discrete_sequence=['#ffffff'], color_continuous_scale='Bluered_r', hover_data=["drift_between_rpi_and_gps_meters", "average_drift", "doppler_compensation_factor", "experimental_heading", "rpi_bearing"])
     fig.add_trace(fig2.data[0])
     fig.add_trace(fig3.data[0])
     fig.add_trace(fig4.data[0])
+    fig.add_trace(fig5.data[0])
     fig.update_layout(mapbox_style="dark")
     fig.write_html(save_path)
   except Exception as e:
@@ -108,6 +111,8 @@ def calculate_drift(open_path, save_path):
       if True: #folder == "11-10-2021-16-17-08":
         try:
           coordinates = pd.read_csv(root + '/' + folder + '/' + 'rpi-coordinates.csv')
+          rpi_compass = pd.read_csv(root + '/' + folder + '/' + 'rpi-compass.csv')
+          rpi_doppler = pd.read_csv(root + '/' + folder + '/' + 'rpi-doppler.csv')
           increment_value = 10
           start_row_range = 0
           end_row_range = increment_value
@@ -131,6 +136,10 @@ def calculate_drift(open_path, save_path):
           average_distance_array = []
           doppler_compensation_factor_array = []
           experimental_heading_array = []
+          rpi_compass_heading_array = []
+          rpi_doppler_array = []
+          rpi_doppler_compass_lat_array = []
+          rpi_doppler_compass_lon_array = []
           
           prev_rpi_lat = coordinates['rpi_lat'].iloc[0]
           prev_rpi_lon = coordinates['rpi_lon'].iloc[0]
@@ -139,6 +148,16 @@ def calculate_drift(open_path, save_path):
           prev_rpi_bearing = 0
           prev_gps_bearing = 0
           
+          for index, row in rpi_compass.iterrows():
+            rpi_compass_heading_array.append(row['heading'])
+            
+          coordinates['rpi_heading'] = rpi_compass_heading_array
+          
+          for index, row in rpi_doppler.iterrows():
+            rpi_doppler_array.append(row['distance_1'])
+            
+          coordinates['rpi_doppler_distance'] = rpi_doppler_array
+            
           for index, row in coordinates.iterrows():
             gps_bearing = calculate_compass_bearing(prev_gps_lat, row['gps_lat'], prev_gps_lon, row['gps_lon'])
             rpi_bearing = calculate_compass_bearing(prev_rpi_lat, row['rpi_lat'], prev_rpi_lon, row['rpi_lon'])
@@ -225,11 +244,21 @@ def calculate_drift(open_path, save_path):
           coordinates['doppler_compensation_factor'] = doppler_compensation_factor_array
           coordinates['average_distance_between_rpi_and_gps'] = average_distance_array
           
+          new_lat = coordinates['gps_lat'].iloc[0]
+          new_lon = coordinates['gps_lon'].iloc[0]
+          
           for index, row in coordinates.iterrows():
             experimental_drift = get_turf_distance(row['experimental_lat'], row['gps_lat'], row['experimental_lon'], row['gps_lon']) * 1000
             drift_from_experimental_coords_to_gps_coords.append(experimental_drift)
+            compass_doppler_coordinates = calculate_new_coordinates(new_lat, new_lon, row['rpi_heading'], row['rpi_doppler_distance'])
+            new_lat = compass_doppler_coordinates['lat']
+            new_lon = compass_doppler_coordinates['lon']
+            rpi_doppler_compass_lon_array.append(new_lon)
+            rpi_doppler_compass_lat_array.append(new_lat)
             
           coordinates['drift_from_experimental_coords_to_gps_coords'] = drift_from_experimental_coords_to_gps_coords
+          coordinates['rpi_doppler_compass_lon'] = rpi_doppler_compass_lon_array
+          coordinates['rpi_doppler_compass_lat'] = rpi_doppler_compass_lat_array
           
           plot_coordinates_on_mapbox(coordinates, root + '/' + folder + '/' + 'rpi-map-' + folder + '.html')
           plot_data_in_plotly_bar_chart(coordinates, root + '/' + folder + '/' + 'rpi-linechart-' + folder + '.html')
