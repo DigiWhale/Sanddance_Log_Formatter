@@ -204,8 +204,8 @@ def calculate_drift(open_path, save_path):
           plot_coordinates_on_mapbox(coordinates, root + '/' + folder + '/' + 'rpi-map-' + folder + '.html')
           plot_data_in_plotly_bar_chart(coordinates, root + '/' + folder + '/' + 'rpi-bar-' + folder + '.html')
           coordinates.to_csv(root + '/' + folder + '/' + 'rpi-coordinates-analyzed-' + folder + '.csv', index=False)
-        except:
-          print(sys.exc_info(), root + '/' + folder + '/')
+        except Exception as e:
+          print(e, sys.exc_info(), root + '/' + folder + '/')
 
 if __name__ == '__main__':
   open_path = "/home/pi/MSRS-RPI/logs"
