@@ -36,7 +36,7 @@ def plot_data_in_plotly_bar_chart(df, save_path):
     chart2['data'][0]['line']['color']='rgb(0, 255, 0)'
     chart3['data'][0]['line']['color']='rgb(0, 0, 255)'
     chart4['data'][0]['line']['color']='rgb(0, 255, 255)'
-    chart5['data'][0]['line']['color']='rgb(255, 0, 255)'
+    chart5['data'][0]['line']['color']='rgb(0, 0, 0)'
     chart.add_trace(chart1.data[0])
     chart.add_trace(chart2.data[0])
     chart.add_trace(chart3.data[0])
