@@ -25,10 +25,16 @@ def plot_data_in_plotly_bar_chart(df, save_path):
   """
   print('plotting charts')
   try:
-    chart = px.line(df, x=df.index, y='rpi_bearing', title='rpi_bearing', height=400)
-    chart1 = px.line(df, x=df.index, y='gps_bearing', title='rpi_bearing', height=400)
-    chart1['data'][0]['line']['color']='rgb(204, 204, 204)'
+    chart = px.line(df, x=df.index, y='rpi_bearing', title='rpi_bearing', height=800)
+    chart1 = px.line(df, x=df.index, y='gps_bearing', title='rpi_bearing', height=800)
+    chart2 = px.line(df, x=df.index, y='drift_between_rpi_and_gps_meters', title='rpi_bearing', height=800)
+    chart3 = px.line(df, x=df.index, y='gps_minus_rpi_bearing', title='rpi_bearing', height=800)
+    chart1['data'][0]['line']['color']='rgb(255, 0, 0)'
+    chart2['data'][0]['line']['color']='rgb(0, 255, 0)'
+    chart3['data'][0]['line']['color']='rgb(0, 0, 255)'
     chart.add_trace(chart1.data[0])
+    chart.add_trace(chart2.data[0])
+    chart.add_trace(chart3.data[0])
     chart.update_layout(title_font_color="red", title_x=0.5, title_font_size=18)
     chart.write_html(save_path)
   except Exception as e:
@@ -209,7 +215,7 @@ def calculate_drift(open_path, save_path):
           coordinates['average_distance_between_rpi_and_gps'] = average_distance_array
           
           plot_coordinates_on_mapbox(coordinates, root + '/' + folder + '/' + 'rpi-map-' + folder + '.html')
-          plot_data_in_plotly_bar_chart(coordinates, root + '/' + folder + '/' + 'rpi-bar-' + folder + '.html')
+          plot_data_in_plotly_bar_chart(coordinates, root + '/' + folder + '/' + 'rpi-linechart-' + folder + '.html')
           coordinates.to_csv(root + '/' + folder + '/' + 'rpi-coordinates-analyzed-' + folder + '.csv', index=False)
         except Exception as e:
           print(e, sys.exc_info(), root + '/' + folder + '/')
