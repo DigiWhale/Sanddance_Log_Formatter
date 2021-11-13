@@ -31,17 +31,19 @@ def plot_data_in_plotly_bar_chart(df, save_path):
     chart3 = px.line(df, x=df.index, y='gps_minus_rpi_bearing', title='rpi_bearing', height=800)
     chart4 = px.line(df, x=df.index, y='experimental_heading', title='rpi_bearing', height=800)
     chart5 = px.line(df, x=df.index, y='drift_from_experimental_coords_to_gps_coords', title='rpi_bearing', height=800)
-    chart5 = px.line(df, x=df.index, y='rpi_heading', title='rpi_bearing', height=800)
+    chart6 = px.line(df, x=df.index, y='rpi_heading', title='rpi_bearing', height=800)
     chart1['data'][0]['line']['color']='rgb(255, 0, 0)'
     chart2['data'][0]['line']['color']='rgb(0, 255, 0)'
     chart3['data'][0]['line']['color']='rgb(0, 0, 255)'
     chart4['data'][0]['line']['color']='rgb(0, 255, 255)'
     chart5['data'][0]['line']['color']='rgb(0, 0, 0)'
+    chart6['data'][0]['line']['color']='rgb(50, 100, 200)'
     chart.add_trace(chart1.data[0])
     chart.add_trace(chart2.data[0])
     chart.add_trace(chart3.data[0])
     chart.add_trace(chart4.data[0])
     chart.add_trace(chart5.data[0])
+    chart.add_trace(chart6.data[0])
     chart.update_layout(title_font_color="red", title_x=0.5, title_font_size=18)
     chart.write_html(save_path)
   except Exception as e:
