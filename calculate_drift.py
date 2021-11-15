@@ -72,7 +72,8 @@ def plot_coordinates_on_mapbox(df, save_path):
     fig3 = px.scatter_mapbox(df, lat='gps_lat', lon='gps_lon', zoom=18, color_discrete_sequence=['#39ff14'], color_continuous_scale='Bluered_r', hover_data=["drift_between_rpi_and_gps_meters", "average_drift", "doppler_compensation_factor", "experimental_heading", "rpi_bearing"])
     fig4 = px.scatter_mapbox(df, lat='experimental_lat', lon='experimental_lon', zoom=18, color_discrete_sequence=['#39ffff'], color_continuous_scale='Bluered_r', hover_data=["drift_between_rpi_and_gps_meters", "average_drift", "doppler_compensation_factor", "experimental_heading", "rpi_bearing"])
     fig5 = px.scatter_mapbox(df, lat='rpi_doppler_compass_lat', lon='rpi_doppler_compass_lon', zoom=18, color_discrete_sequence=['#ffffff'], color_continuous_scale='Bluered_r', hover_data=["drift_between_rpi_and_gps_meters", "average_drift", "doppler_compensation_factor", "experimental_heading", "rpi_bearing"])
-    fig6 = px.scatter_mapbox(df, lat="annomaly_lat", lon="annomaly_lon", size='drift_between_rpi_and_gps_meters', color_continuous_scale=px.colors.cyclical.IceFire, size_max=15, zoom=10)
+    fig6 = px.scatter_mapbox(df, lat="annomaly_gps_lat", lon="annomaly_gps_lon", size='drift_between_rpi_and_gps_meters', color_continuous_scale=px.colors.cyclical.IceFire, size_max=15, zoom=10)
+    fig7 = px.scatter_mapbox(df, lat="annomaly_rpi_lat", lon="annomaly_rpi_lon", size='drift_between_rpi_and_gps_meters', color_continuous_scale=px.colors.cyclical.IceFire, size_max=15, zoom=10)
     fig.add_trace(fig2.data[0])
     fig.add_trace(fig3.data[0])
     fig.add_trace(fig4.data[0])
@@ -144,8 +145,10 @@ def calculate_drift(open_path, save_path):
           rpi_doppler_array = []
           rpi_doppler_compass_lat_array = []
           rpi_doppler_compass_lon_array = []
-          annomaly_lat_array = []
-          annomaly_lon_array = []
+          annomaly_gps_lat_array = []
+          annomaly_gps_lon_array = []
+          annomaly_rpi_lat_array = []
+          annomaly_rpi_lon_array = []
           
           prev_rpi_lat = coordinates['rpi_lat'].iloc[0]
           prev_rpi_lon = coordinates['rpi_lon'].iloc[0]
@@ -231,13 +234,17 @@ def calculate_drift(open_path, save_path):
             if abs(average_drift) < 16:  
               new_position = calculate_new_coordinates(new_lat, new_lon, average_drift + row['rpi_bearing'] + compass_vehicle_alignment_error, row['rpi_distance_from_prev_coord_meters']) # * doppler_compensation_factor)
               experimental_heading_array.append(row['rpi_bearing'] + average_drift + compass_vehicle_alignment_error)
-              annomaly_lat_array.append(0)
-              annomaly_lon_array.append(0)
+              annomaly_gps_lat_array.append(0)
+              annomaly_gps_lon_array.append(0)
+              annomaly_rpi_lat_array.append(0)
+              annomaly_rpi_lon_array.append(0)
             else:
               new_position = calculate_new_coordinates(new_lat, new_lon, rpi_previous_heading + compass_vehicle_alignment_error, row['rpi_distance_from_prev_coord_meters']) # * doppler_compensation_factor)
               experimental_heading_array.append(row['rpi_bearing'] + compass_vehicle_alignment_error)
-              annomaly_lat_array.append(row['gps_lat'])
-              annomaly_lon_array.append(row['gps_lon'])
+              annomaly_gps_lat_array.append(row['gps_lat'])
+              annomaly_gps_lon_array.append(row['gps_lon'])
+              annomaly_rpi_lat_array.append(row['rpi_lat'])
+              annomaly_rpi_lon_array.append(row['rpi_lon'])
             rpi_previous_heading = row['rpi_bearing']
             new_lat = new_position['lat']
             new_lon = new_position['lon']
@@ -271,8 +278,10 @@ def calculate_drift(open_path, save_path):
           coordinates['drift_from_experimental_coords_to_gps_coords'] = drift_from_experimental_coords_to_gps_coords
           coordinates['rpi_doppler_compass_lon'] = rpi_doppler_compass_lon_array
           coordinates['rpi_doppler_compass_lat'] = rpi_doppler_compass_lat_array
-          coordinates['annomaly_lat'] = annomaly_lat_array
-          coordinates['annomaly_lon'] = annomaly_lon_array
+          coordinates['annomaly_gps_lat'] = annomaly_gps_lat_array
+          coordinates['annomaly_gps_lon'] = annomaly_gps_lon_array
+          coordinates['annomaly_rpi_lat'] = annomaly_rpi_lat_array
+          coordinates['annomaly_rpi_lon'] = annomaly_rpi_lon_array
           
           plot_coordinates_on_mapbox(coordinates, root + '/' + folder + '/' + 'rpi-map-' + folder + '.html')
           plot_data_in_plotly_bar_chart(coordinates, root + '/' + folder + '/' + 'rpi-linechart-' + folder + '.html')
