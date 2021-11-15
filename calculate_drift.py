@@ -72,7 +72,7 @@ def plot_coordinates_on_mapbox(df, save_path):
     fig3 = px.scatter_mapbox(df, lat='gps_lat', lon='gps_lon', zoom=18, color_discrete_sequence=['#39ff14'], color_continuous_scale='Bluered_r', hover_data=["drift_between_rpi_and_gps_meters", "average_drift", "doppler_compensation_factor", "experimental_heading", "rpi_bearing"])
     fig4 = px.scatter_mapbox(df, lat='experimental_lat', lon='experimental_lon', zoom=18, color_discrete_sequence=['#39ffff'], color_continuous_scale='Bluered_r', hover_data=["drift_between_rpi_and_gps_meters", "average_drift", "doppler_compensation_factor", "experimental_heading", "rpi_bearing"])
     fig5 = px.scatter_mapbox(df, lat='rpi_doppler_compass_lat', lon='rpi_doppler_compass_lon', zoom=18, color_discrete_sequence=['#ffffff'], color_continuous_scale='Bluered_r', hover_data=["drift_between_rpi_and_gps_meters", "average_drift", "doppler_compensation_factor", "experimental_heading", "rpi_bearing"])
-    fig6 = px.scatter_mapbox(df, lat="annomaly_lat", lon="annomaly_lon", size=10, color_continuous_scale=px.colors.cyclical.IceFire, size_max=15, zoom=10)
+    fig6 = px.scatter_mapbox(df, lat="annomaly_lat", lon="annomaly_lon", size='drift_between_rpi_and_gps_meters', color_continuous_scale=px.colors.cyclical.IceFire, size_max=15, zoom=10)
     fig.add_trace(fig2.data[0])
     fig.add_trace(fig3.data[0])
     fig.add_trace(fig4.data[0])
