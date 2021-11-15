@@ -79,6 +79,7 @@ def plot_coordinates_on_mapbox(df, save_path):
     fig.add_trace(fig4.data[0])
     fig.add_trace(fig5.data[0])
     fig.add_trace(fig6.data[0])
+    fig.add_trace(fig7.data[0])
     fig.update_layout(mapbox_style="dark")
     fig.write_html(save_path)
   except Exception as e:
