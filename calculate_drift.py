@@ -72,10 +72,12 @@ def plot_coordinates_on_mapbox(df, save_path):
     fig3 = px.scatter_mapbox(df, lat='gps_lat', lon='gps_lon', zoom=18, color_discrete_sequence=['#39ff14'], color_continuous_scale='Bluered_r', hover_data=["drift_between_rpi_and_gps_meters", "average_drift", "doppler_compensation_factor", "experimental_heading", "rpi_bearing"])
     fig4 = px.scatter_mapbox(df, lat='experimental_lat', lon='experimental_lon', zoom=18, color_discrete_sequence=['#39ffff'], color_continuous_scale='Bluered_r', hover_data=["drift_between_rpi_and_gps_meters", "average_drift", "doppler_compensation_factor", "experimental_heading", "rpi_bearing"])
     fig5 = px.scatter_mapbox(df, lat='rpi_doppler_compass_lat', lon='rpi_doppler_compass_lon', zoom=18, color_discrete_sequence=['#ffffff'], color_continuous_scale='Bluered_r', hover_data=["drift_between_rpi_and_gps_meters", "average_drift", "doppler_compensation_factor", "experimental_heading", "rpi_bearing"])
+    fig6 = px.scatter_mapbox(df, lat="annomaly_lat", lon="annomaly_lon")
     fig.add_trace(fig2.data[0])
     fig.add_trace(fig3.data[0])
     fig.add_trace(fig4.data[0])
     fig.add_trace(fig5.data[0])
+    fig.add_trace(fig6.data[0])
     fig.update_layout(mapbox_style="dark")
     fig.write_html(save_path)
   except Exception as e:
@@ -110,7 +112,7 @@ def calculate_drift(open_path, save_path):
   for root, subdirectories, files in os.walk(open_path):
     for folder in subdirectories:
       print(folder)
-      if True: #folder == "11-10-2021-16-17-08":
+      if folder == "11-10-2021-16-17-08":
         try:
           coordinates = pd.read_csv(root + '/' + folder + '/' + 'rpi-coordinates.csv')
           rpi_compass = pd.read_csv(root + '/' + folder + '/' + 'rpi-compass.csv')
@@ -142,6 +144,8 @@ def calculate_drift(open_path, save_path):
           rpi_doppler_array = []
           rpi_doppler_compass_lat_array = []
           rpi_doppler_compass_lon_array = []
+          annomaly_lat_array = []
+          annomaly_lon_array = []
           
           prev_rpi_lat = coordinates['rpi_lat'].iloc[0]
           prev_rpi_lon = coordinates['rpi_lon'].iloc[0]
@@ -230,6 +234,8 @@ def calculate_drift(open_path, save_path):
             else:
               new_position = calculate_new_coordinates(new_lat, new_lon, rpi_previous_heading + compass_vehicle_alignment_error, row['rpi_distance_from_prev_coord_meters']) # * doppler_compensation_factor)
               experimental_heading_array.append(row['rpi_bearing'] + compass_vehicle_alignment_error)
+              annomaly_lat_array.append(row['gps_lat'])
+              annomaly_lon_array.append(row['gps_lat'])
             rpi_previous_heading = row['rpi_bearing']
             new_lat = new_position['lat']
             new_lon = new_position['lon']
@@ -263,6 +269,8 @@ def calculate_drift(open_path, save_path):
           coordinates['drift_from_experimental_coords_to_gps_coords'] = drift_from_experimental_coords_to_gps_coords
           coordinates['rpi_doppler_compass_lon'] = rpi_doppler_compass_lon_array
           coordinates['rpi_doppler_compass_lat'] = rpi_doppler_compass_lat_array
+          coordinates['annomaly_lat'] = annomaly_lat_array
+          coordinates['annomaly_lon'] = annomaly_lon_array
           
           plot_coordinates_on_mapbox(coordinates, root + '/' + folder + '/' + 'rpi-map-' + folder + '.html')
           plot_data_in_plotly_bar_chart(coordinates, root + '/' + folder + '/' + 'rpi-linechart-' + folder + '.html')
