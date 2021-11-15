@@ -237,7 +237,7 @@ def calculate_drift(open_path, save_path):
               new_position = calculate_new_coordinates(new_lat, new_lon, rpi_previous_heading + compass_vehicle_alignment_error, row['rpi_distance_from_prev_coord_meters']) # * doppler_compensation_factor)
               experimental_heading_array.append(row['rpi_bearing'] + compass_vehicle_alignment_error)
               annomaly_lat_array.append(row['gps_lat'])
-              annomaly_lon_array.append(row['gps_lat'])
+              annomaly_lon_array.append(row['gps_lon'])
             rpi_previous_heading = row['rpi_bearing']
             new_lat = new_position['lat']
             new_lon = new_position['lon']
