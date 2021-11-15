@@ -231,6 +231,8 @@ def calculate_drift(open_path, save_path):
             if abs(average_drift) < 16:  
               new_position = calculate_new_coordinates(new_lat, new_lon, average_drift + row['rpi_bearing'] + compass_vehicle_alignment_error, row['rpi_distance_from_prev_coord_meters']) # * doppler_compensation_factor)
               experimental_heading_array.append(row['rpi_bearing'] + average_drift + compass_vehicle_alignment_error)
+              annomaly_lat_array.append(0)
+              annomaly_lon_array.append(0)
             else:
               new_position = calculate_new_coordinates(new_lat, new_lon, rpi_previous_heading + compass_vehicle_alignment_error, row['rpi_distance_from_prev_coord_meters']) # * doppler_compensation_factor)
               experimental_heading_array.append(row['rpi_bearing'] + compass_vehicle_alignment_error)
