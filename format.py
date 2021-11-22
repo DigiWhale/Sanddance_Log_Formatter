@@ -110,20 +110,20 @@ def iterate_through_files_in_folder(open_path, save_path):
                 data2 = pd.read_csv(root + '/' + folder + '/' + 'rpi-compass.csv')
                 output1 = pd.merge(data1, data2, on='timestamp', how='inner', suffixes=['_1','_2'])
                 
-                data3 = pd.read_csv(root + '/' + folder + '/' + 'rpi-imu.csv')
+                # data3 = pd.read_csv(root + '/' + folder + '/' + 'rpi-imu.csv')
                 data4 = pd.read_csv(root + '/' + folder + '/' + 'rpi-doppler.csv')
-                output2 = pd.merge(data3, data4, on='timestamp', how='inner', suffixes=['_1','_2'])
-                output3 = pd.merge(output1, output2, on='timestamp', how='inner', suffixes=['_1','_2'])
+                # output2 = pd.merge(data3, data4, on='timestamp', how='inner', suffixes=['_1','_2'])
+                output3 = pd.merge(output1, data4, on='timestamp', how='inner', suffixes=['_1','_2'])
                 
-                data5 = pd.read_csv(root + '/' + folder + '/' + 'biodigital-imu.csv')
-                data6 = pd.read_csv(root + '/' + folder + '/' + 'biodigital-dmc.csv')
-                output4 = pd.merge(data5, data6, on='timestamp', how='inner', suffixes=['_1','_2'])
-                output5 = pd.merge(output3, output4, on='timestamp', how='inner', suffixes=['_1','_2'])
+                # data5 = pd.read_csv(root + '/' + folder + '/' + 'biodigital-imu.csv')
+                # data6 = pd.read_csv(root + '/' + folder + '/' + 'biodigital-dmc.csv')
+                # output4 = pd.merge(data5, data6, on='timestamp', how='inner', suffixes=['_1','_2'])
+                # output5 = pd.merge(output3, output4, on='timestamp', how='inner', suffixes=['_1','_2'])
 
                 data7 = pd.read_csv(root + '/' + folder + '/' + 'rpi-altitude-temperature.csv')
                 data8 = pd.read_csv(root + '/' + folder + '/' + 'rpi-secondary-compass.csv')
                 output6 = pd.merge(data7, data8, on='timestamp', how='inner', suffixes=['_1','_2'])
-                output7 = pd.merge(output5, output6, on='timestamp', how='inner', suffixes=['_1','_2'])
+                output7 = pd.merge(output3, output6, on='timestamp', how='inner', suffixes=['_1','_2'])
                 
                 output7.to_csv( save_path + '/' + folder + '/' + 'master-' + folder + '.csv', index=False, encoding='utf-8-sig')
             except:
