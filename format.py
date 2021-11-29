@@ -107,7 +107,7 @@ def iterate_through_files_in_folder(open_path, save_path):
                         shutil.rmtree(root + '/' + folder)
                     except OSError as e:
                         print("Error: %s : %s" % (root + '/' + folder, e.strerror))
-                data2 = pd.read_csv(root + '/' + folder + '/' + 'rpi-compass.csv')
+                data2 = pd.read_csv(root + '/' + folder + '/' + 'rpi-kvh-compass.csv')
                 output1 = pd.merge(data1, data2, on='timestamp', how='inner', suffixes=['_1','_2'])
                 
                 # data3 = pd.read_csv(root + '/' + folder + '/' + 'rpi-imu.csv')
