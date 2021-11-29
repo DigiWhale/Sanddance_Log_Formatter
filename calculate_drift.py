@@ -117,7 +117,7 @@ def calculate_drift(open_path, save_path):
       if True: #folder == "11-10-2021-16-17-08":
         try:
           coordinates = pd.read_csv(root + '/' + folder + '/' + 'rpi-coordinates.csv')
-          rpi_compass = pd.read_csv(root + '/' + folder + '/' + 'rpi-compass.csv')
+          rpi_compass = pd.read_csv(root + '/' + folder + '/' + 'rpi-kvh-compass.csv')
           rpi_doppler = pd.read_csv(root + '/' + folder + '/' + 'rpi-doppler.csv')
           increment_value = 10
           start_row_range = 0
@@ -159,7 +159,7 @@ def calculate_drift(open_path, save_path):
           prev_gps_bearing = 0
           
           for index, row in rpi_compass.iterrows():
-            rpi_compass_heading_array.append(row['heading'])
+            rpi_compass_heading_array.append(row['kvh_heading'])
             
           coordinates['rpi_heading'] = rpi_compass_heading_array
           
